@@ -26,11 +26,13 @@ public class DataManager : MonoBehaviour
         ItemCount = new int[ItemTypeCount];
         ItemCount_Sell = new int[ItemTypeCount];
         ItemPrice = new int[ItemTypeCount];
+
+        DataInput();
     }
 
     private void Start()
     {
-        DataInput();
+        
     }
 
     private void DataInput()
