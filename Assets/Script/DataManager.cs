@@ -10,7 +10,7 @@ public class DataManager : MonoBehaviour
     internal string[] ItemType;
 
     [Header("아이템 갯수")]
-    internal int[] ItemCount;
+    [SerializeField]internal int[] ItemCount;
     internal int[] ItemCount_Sell;
 
     [Header("아이템 가격")]
@@ -18,6 +18,7 @@ public class DataManager : MonoBehaviour
 
     [Header("돈")]
     internal int HaveMoney = 0;
+    internal int SellTotalMoney = 0;
 
 
     private void Awake()
@@ -27,12 +28,12 @@ public class DataManager : MonoBehaviour
         ItemCount_Sell = new int[ItemTypeCount];
         ItemPrice = new int[ItemTypeCount];
 
-        DataInput();
+        
     }
 
     private void Start()
     {
-        
+        DataInput();
     }
 
     private void DataInput()

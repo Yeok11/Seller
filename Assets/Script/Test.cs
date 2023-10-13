@@ -14,5 +14,6 @@ public class Test : MonoBehaviour
     public void A()
     {
         Debug.Log(CSVManager.Instance.csvdata.ItemData[1]["ItemName"].ToString());
+        Debug.Log(gameObject.name);
     }
 }
