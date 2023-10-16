@@ -7,12 +7,8 @@ public class CustomerManager : MonoBehaviour
     GameObject NowCustomer;
     Transform CustomerOrderPos;
 
-    DataManager DM;
-
     private void Start()
     {
-        DM = GameObject.Find("GameManager").GetComponent<DataManager>();
-
         CustomerOrderPos = transform.GetChild(6);
     }
 
@@ -43,10 +39,10 @@ public class CustomerManager : MonoBehaviour
         CustomerOrderPos.GetChild(0).gameObject.SetActive(false);
         CustomerOrderPos.GetChild(1).gameObject.SetActive(false);
 
-        if (DM.NowOpen == true) SpawnCustomer();
+        if (DataManager.Instance.NowOpen == true) SpawnCustomer();
     }
 
-    int RandomCustomer()
+    private int RandomCustomer()
     {
         int i = Random.Range(1, 21);
         switch (i)

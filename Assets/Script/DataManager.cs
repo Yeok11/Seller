@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DataManager : MonoBehaviour
+public class DataManager : SingleTon<DataManager>
 {
     internal int ItemTypeCount = 15;
 

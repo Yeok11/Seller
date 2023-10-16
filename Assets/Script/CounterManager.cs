@@ -13,18 +13,20 @@ public class CounterManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI SellData;
     [SerializeField] private TextMeshProUGUI TotalSign;
     private TextMeshProUGUI[] SellDatas = new TextMeshProUGUI[15];
-    GameObject SellPos;  
+    Transform SellPos;  
 
     DataManager DM;
     CustomerManager CM;
 
+    List<string> ItemSellDatas = new List<string>();
+
     void Start()
     {
-        DM = GetComponent<DataManager>();
+        DM = DataManager.Instance;
         CM = GameObject.Find("CustomerManager").GetComponent<CustomerManager>();
 
         Shelf = GameObject.Find("Shelf_Contants");
-        SellPos = GameObject.Find("Sell_Contants");
+        SellPos = GameObject.Find("Sell_Contants").transform;
 
         for (int i = 0; i < Shelf.transform.childCount; i++)
         {
@@ -33,7 +35,7 @@ public class CounterManager : MonoBehaviour
             Slot[i].transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = DM.ItemCount[i].ToString();
             Slot[i].transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().text = DM.ItemPrice[i].ToString();
 
-            SellDatas[i] = Instantiate(SellData, SellPos.transform);
+            SellDatas[i] = Instantiate(SellData, SellPos);
         }
 
         MonitorReset();
@@ -42,34 +44,48 @@ public class CounterManager : MonoBehaviour
     public void ShelfItem_Click(int CodeNum)
     {
         int NullDataPos;
-        
-        //물건 갯수 확인
-        if(DM.ItemCount[CodeNum] > 0)
+        //가게를 열었는 지 확인
+        if (DM.NowOpen == true)
         {
-            //같은 셀 & 빈 셀 확인
-            for (NullDataPos = 0; NullDataPos < SellDatas.Length; NullDataPos++)
+            //물건 갯수 확인
+            if (DM.ItemCount[CodeNum] > 0)
             {
-                if (SellDatas[NullDataPos].gameObject.activeSelf == false) break;
-                else if (SellDatas[NullDataPos].text == CSVManager.Instance.csvdata.ItemData[CodeNum]["ItemName"].ToString()) goto ShelfItem_Click_Skip1;
-            }
+                //같은 셀 & 빈 셀 확인
+                for (NullDataPos = 0; NullDataPos < SellDatas.Length; NullDataPos++)
+                {
+                    if (SellDatas[NullDataPos].gameObject.activeSelf == false) break;
+                    else if (SellDatas[NullDataPos].text == CSVManager.Instance.csvdata.ItemData[CodeNum]["ItemName"].ToString()) goto ShelfItem_Click_Skip1;
+                }
 
-            SellDatas[NullDataPos].gameObject.SetActive(true);
-            SellDatas[NullDataPos].text = CSVManager.Instance.csvdata.ItemData[CodeNum]["ItemName"].ToString();
+                SellDatas[NullDataPos].gameObject.SetActive(true);
+                SellDatas[NullDataPos].text = CSVManager.Instance.csvdata.ItemData[CodeNum]["ItemName"].ToString();
 
             ShelfItem_Click_Skip1:
 
-            DM.ItemCount_Sell[CodeNum]++;
-            DM.ItemCount[CodeNum]--;
-            SellDatas[NullDataPos].transform.GetChild(0).GetComponentInChildren<TextMeshProUGUI>().text = DM.ItemCount_Sell[CodeNum].ToString();
+                //갯수 조절
+                DM.ItemCount_Sell[CodeNum]++;
+                DM.ItemCount[CodeNum]--;
 
-            DM.SellTotalMoney += DM.ItemPrice[CodeNum];
-            TotalSign.text = DM.SellTotalMoney + "원";
-            
-            ShelfReset();
+                DM.SellTotalMoney += DM.ItemPrice[CodeNum];
+
+                SellDatas[NullDataPos].transform.GetChild(0).GetComponentInChildren<TextMeshProUGUI>().text = DM.ItemCount_Sell[CodeNum].ToString();
+                TotalSign.text = DM.SellTotalMoney + "원";
+
+                //판단을 위해 리스트에 따로 저장
+                ItemSellDatas.Add(SellDatas[NullDataPos].text);
+
+                ShelfReset();
+            }
+            else Debug.Log("더 이상 물건이 없습니다.");
         }
-        else
+        else Debug.Log("가게를 아직 열지 않았습니다.");
+    }
+
+    private void JudgeSell_Items()
+    {
+        for (int i = 0; i < ItemSellDatas.Count; i++)
         {
-            Debug.Log("더 이상 물건이 없습니다.");
+            Debug.Log(ItemSellDatas[i]);
         }
     }
 
@@ -98,6 +114,7 @@ public class CounterManager : MonoBehaviour
     {
         Debug.Log("아이템 판매가 성공 하셨습니다.");
 
+        JudgeSell_Items();
         MonitorReset();
         CM.ResetCustomer();
     }
@@ -107,7 +124,7 @@ public class CounterManager : MonoBehaviour
         DM.SellTotalMoney = 0;
         TotalSign.text = DM.SellTotalMoney + "원";
 
-        for (int i = 0; i < SellPos.transform.childCount; i++)
+        for (int i = 0; i < SellPos.childCount; i++)
         {
             DM.ItemCount_Sell[i] = 0;
 
