@@ -20,6 +20,12 @@ public class DataManager : MonoBehaviour
     internal int HaveMoney = 0;
     internal int SellTotalMoney = 0;
 
+    internal int Days = 0;
+    internal List<string> Weeks = new List<string>();
+
+    internal string[] OpCl = { "OPEN", "CLOSE", "¥Ÿ¿Ω ≥Ø" };
+    internal bool NowOpen;
+    internal int HourSec = 24;
 
     private void Awake()
     {
@@ -27,8 +33,6 @@ public class DataManager : MonoBehaviour
         ItemCount = new int[ItemTypeCount];
         ItemCount_Sell = new int[ItemTypeCount];
         ItemPrice = new int[ItemTypeCount];
-
-        
     }
 
     private void Start()
