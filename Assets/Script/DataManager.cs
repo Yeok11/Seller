@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class DataManager : SingleTon<DataManager>
 {
@@ -19,13 +20,20 @@ public class DataManager : SingleTon<DataManager>
     [Header("돈")]
     internal int HaveMoney = 0;
     internal int SellTotalMoney = 0;
+    [SerializeField] TextMeshProUGUI MoneyPos;
 
     internal int Days = 0;
     internal List<string> Weeks = new List<string>();
 
-    internal string[] OpCl = { "OPEN", "CLOSE", "다음 날" };
+    internal string[] OpCl = { "OPEN", "CLOSE", "다음 날", "보고서 확인" };
     internal bool NowOpen;
     internal int HourSec = 24;
+
+    [Header("상점 아이템 정보")]
+    [SerializeField] internal GameObject MarketBtsPos;
+    internal int MarketItemCnt;
+
+    internal List<int> OrderData = new List<int>();
 
     private void Awake()
     {
@@ -38,6 +46,11 @@ public class DataManager : SingleTon<DataManager>
     private void Start()
     {
         DataInput();
+    }
+
+    private void Update()
+    {
+        MoneyPos.text = HaveMoney.ToString();
     }
 
     private void DataInput()

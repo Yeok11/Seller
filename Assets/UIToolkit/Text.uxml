@@ -1,0 +1,5 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement style="width: 100px; height: 40px; -unity-font: url(&apos;project://database/Assets/Fonts/NotoSerifKR-Regular.otf?fileID=12800000&amp;guid=c9f47cd2438411e4da11b43c5d9c83d8&amp;type=3#NotoSerifKR-Regular&apos;);">
+        <ui:Label text="자고싶다" display-tooltip-when-elided="true" />
+    </ui:VisualElement>
+</ui:UXML>

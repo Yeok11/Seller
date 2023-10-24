@@ -4,7 +4,7 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 
-public class TimeManager : MonoBehaviour
+public class TimeManager : SingleTon<TimeManager>
 {
     DataManager DM;
     internal float TimeData;
@@ -29,17 +29,29 @@ public class TimeManager : MonoBehaviour
         NewDay();
     }
 
-    private void NewDay()
+    internal void NewDay()
     {
+        DM.Days += 1;
         transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = DM.Weeks[DM.Days % 7] + "요일";
-        transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = (DM.Days + 1) + "일";
+        transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = DM.Days + "일";
+
+        SubSystemManager.Instance.MarketScheduleUpdate();
+
+        TimeData = 0;
+
+        if (DM.Weeks[DM.Days % 7] == "수")
+        {
+            CounterManager.Instance.AddItem();
+        }
+
+        HourTimer();
     }
 
-    private void HourTimer()
+    internal void HourTimer()
     {
         transform.GetChild(2).GetChild(0).GetComponent<Image>().fillAmount = 1 - TimeData / 24;
 
-        if (transform.GetChild(2).GetChild(0).GetComponent<Image>().fillAmount == 0) OpSys.OnPointerDown(null);
+        if (transform.GetChild(2).GetChild(0).GetComponent<Image>().fillAmount == 0 && DM.NowOpen == true) OpSys.OnPointerDown(null);
     }
 
     private void Update()

@@ -2,18 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CustomerManager : MonoBehaviour
+public class CustomerManager : SingleTon<CustomerManager>
 {
     GameObject NowCustomer;
-    Transform CustomerOrderPos;
-
-    private void Start()
-    {
-        CustomerOrderPos = transform.GetChild(6);
-    }
+    [SerializeField] Transform CustomerOrderPos;
+    internal bool OrderNowDo;
 
     IEnumerator CustomerOrder()
     {
+        OrderNowDo = true;
+        
         yield return new WaitForSeconds(0.25f);
 
         CustomerOrderPos.GetChild(0).gameObject.SetActive(true);
@@ -21,7 +19,8 @@ public class CustomerManager : MonoBehaviour
         yield return new WaitForSeconds(0.15f);
 
         CustomerOrderPos.GetChild(1).gameObject.SetActive(true);
-        
+
+        OrderNowDo = false;
     }
 
     internal void SpawnCustomer()

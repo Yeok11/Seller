@@ -5,7 +5,7 @@ using TMPro;
 using System;
 
 [HideInInspector]
-public class CounterManager : MonoBehaviour
+public class CounterManager : SingleTon<CounterManager>
 {
     private GameObject Shelf;
     private GameObject[] Slot = new GameObject[15];
@@ -65,10 +65,11 @@ public class CounterManager : MonoBehaviour
                 //갯수 조절
                 DM.ItemCount_Sell[CodeNum]++;
                 DM.ItemCount[CodeNum]--;
+                
+                SellDatas[NullDataPos].transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = DM.ItemCount_Sell[CodeNum].ToString();
 
+                //총합 가격
                 DM.SellTotalMoney += DM.ItemPrice[CodeNum];
-
-                SellDatas[NullDataPos].transform.GetChild(0).GetComponentInChildren<TextMeshProUGUI>().text = DM.ItemCount_Sell[CodeNum].ToString();
                 TotalSign.text = DM.SellTotalMoney + "원";
 
                 //판단을 위해 리스트에 따로 저장
@@ -87,6 +88,21 @@ public class CounterManager : MonoBehaviour
         {
             Debug.Log(ItemSellDatas[i]);
         }
+    }
+
+    internal void AddItem()
+    {
+        int j = DM.OrderData.Count;
+
+        for (int i = 0; i < j; i++)
+        {
+            DM.ItemCount[DM.OrderData[0]]++;
+            DM.OrderData.RemoveAt(0);
+        }
+
+        Debug.Log("물건이 배달 되었습니다.");
+
+        ShelfReset();
     }
 
     private void ShelfReset()

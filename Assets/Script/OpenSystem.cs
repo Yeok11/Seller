@@ -8,13 +8,11 @@ public class OpenSystem : MonoBehaviour, IPointerDownHandler
 {
     DataManager DM;
     CustomerManager CM;
-    TimeManager TM;
 
     TextMeshProUGUI Contants;
 
     private void Awake()
     {
-        TM = GameObject.Find("Calendar").GetComponent<TimeManager>();
         DM = DataManager.Instance;
         CM = GameObject.Find("CustomerManager").GetComponent<CustomerManager>();
         Contants = GetComponentInChildren<TextMeshProUGUI>();
@@ -22,25 +20,34 @@ public class OpenSystem : MonoBehaviour, IPointerDownHandler
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        //OPEN일 때
+        //OPEN -> 다음 날
         if(Contants.text == DM.OpCl[0])
         {
-            Contants.text = DM.OpCl[2];
-            DM.NowOpen = false;
-            CM.ResetCustomer();
+            if (CustomerManager.Instance.OrderNowDo == true)
+            {
+                Debug.Log("손님이 주문 도중일 때는 가게를 닫을 수 없습니다.");
+            }
+            else
+            {
+                Contants.text = DM.OpCl[2];
+                DM.NowOpen = false;
+                CM.ResetCustomer();
+                TimeManager.Instance.TimeData = 24;
+                TimeManager.Instance.HourTimer();
+            }
         }
-        //CLOSE일 때
+        //CLOSE -> OPEN
         else if (Contants.text == DM.OpCl[1])
         {
            Contants.text = DM.OpCl[0];
             DM.NowOpen = true;
-            TM.TimeData = 0;
             CM.SpawnCustomer();
         }
-        //다음 날일 때
-        else
+        //다음 날 -> OPEN
+        else if(Contants.text == DM.OpCl[2])
         {
             Contants.text = DM.OpCl[1];
+            TimeManager.Instance.NewDay();
         }
     }
 }
