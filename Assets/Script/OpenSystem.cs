@@ -11,16 +11,22 @@ public class OpenSystem : MonoBehaviour, IPointerDownHandler
 
     TextMeshProUGUI Contants;
 
+    internal static bool Check_WeekList;
+
     private void Awake()
     {
         DM = DataManager.Instance;
         CM = GameObject.Find("CustomerManager").GetComponent<CustomerManager>();
         Contants = GetComponentInChildren<TextMeshProUGUI>();
+
+        Check_WeekList = true;
+
+        Contants.text = DM.OpCl[1];
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
-        //OPEN -> 다음 날
+        //영업중 -> 영업 종료
         if(Contants.text == DM.OpCl[0])
         {
             if (CustomerManager.Instance.OrderNowDo == true)
@@ -29,6 +35,11 @@ public class OpenSystem : MonoBehaviour, IPointerDownHandler
             }
             else
             {
+                if (Check_WeekList == false)
+                {
+                    TimeManager.Instance.WeekList.SetActive(true);
+                }
+
                 Contants.text = DM.OpCl[2];
                 DM.NowOpen = false;
                 CM.ResetCustomer();
@@ -36,18 +47,26 @@ public class OpenSystem : MonoBehaviour, IPointerDownHandler
                 TimeManager.Instance.HourTimer();
             }
         }
-        //CLOSE -> OPEN
+        //영업 준비 -> 영업중
         else if (Contants.text == DM.OpCl[1])
         {
            Contants.text = DM.OpCl[0];
             DM.NowOpen = true;
-            CM.SpawnCustomer();
+            StartCoroutine(CM.SpawnDelay());
         }
-        //다음 날 -> OPEN
+        //영업 종료 -> 영업 준비
         else if(Contants.text == DM.OpCl[2])
         {
-            Contants.text = DM.OpCl[1];
-            TimeManager.Instance.NewDay();
+            if (Check_WeekList == true)
+            {
+                Contants.text = DM.OpCl[1];
+                TimeManager.Instance.NewDay();
+            }
+            else
+            {
+                Debug.Log("주간일지를 확인하세요.");
+            }
+            
         }
     }
 }

@@ -12,6 +12,8 @@ public class SubSystemManager : SingleTon<SubSystemManager>
 
     [SerializeField] private Transform BagContants;
 
+    [SerializeField] Transform InteriorLists;
+
     private void Awake()
     {
         BtList_Obj = GameObject.Find("BtList");
@@ -21,6 +23,7 @@ public class SubSystemManager : SingleTon<SubSystemManager>
     private void Start()
     {
         BagItemReset();
+        InteriorUpdate();
     }
 
     public void BtTurn(int BtType)
@@ -47,6 +50,8 @@ public class SubSystemManager : SingleTon<SubSystemManager>
         if (OpenObject.name == "BagWindow") BagItemReset();
     }
 
+
+    //창고
     private void BagItemReset()
     {
         for (int i = 0; i < 15; i++)
@@ -58,10 +63,41 @@ public class SubSystemManager : SingleTon<SubSystemManager>
     }
 
 
+    public void InteriorUpgrade(int j)
+    {
+        if (DataManager.Instance.NextCost[j] <= DataManager.Instance.HaveMoney && DataManager.Instance.InteriorLevel[j] < 5)
+        {
+            DataManager.Instance.HaveMoney -= DataManager.Instance.NextCost[j];
+            DataManager.Instance.InteriorLevel[j]++;
+            InteriorUpdate();
+        }
+        else
+        {
+            Debug.Log("잔액이 부족합니다.");
+        }
+    }
 
+    private void InteriorUpdate()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            
+            if (DataManager.Instance.InteriorLevel[i] < 5)
+            {
+                InteriorLists.GetChild(i).GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>().text = "Lv." + DataManager.Instance.InteriorLevel[i];
+            }
+            else
+            {
+                InteriorLists.GetChild(i).GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>().text = "Lv.Max";
+            }
+            InteriorLists.GetChild(i).GetChild(3).GetComponent<TextMeshProUGUI>().text = DataManager.Instance.NextCost[i].ToString();
+        }
 
-
-
+        InteriorLists.GetChild(0).GetChild(2).GetComponent<TextMeshProUGUI>().text = $"영업 시간 {DataManager.Instance.BonusPer[0,(DataManager.Instance.InteriorLevel[0] - 1)]}% 연장";
+        InteriorLists.GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = $"손님 방문속도 {DataManager.Instance.BonusPer[1, (DataManager.Instance.InteriorLevel[1] - 1)]}% 상승";
+        InteriorLists.GetChild(2).GetChild(2).GetComponent<TextMeshProUGUI>().text = $"전 제품 매입가 {DataManager.Instance.BonusPer[2, (DataManager.Instance.InteriorLevel[2] - 1)]}% 감소";
+        InteriorLists.GetChild(3).GetChild(2).GetComponent<TextMeshProUGUI>().text = $"전 제품 판매가 {DataManager.Instance.BonusPer[3, (DataManager.Instance.InteriorLevel[3] - 1)]}% 상승";
+    }
 
 
 
@@ -112,29 +148,38 @@ public class SubSystemManager : SingleTon<SubSystemManager>
             }
         }
 
-        if (DataManager.Instance.ItemPrice[j] * DataManager.Instance.MarketItemCnt <= DataManager.Instance.HaveMoney)
+        //판매가 - 인테리어 세일값 - 기본 20% 매입 감소
+        int Sale = DataManager.Instance.ItemPrice[j] - (DataManager.Instance.ItemPrice[j] * DataManager.Instance.InteriorLevel[2] / 100) - (DataManager.Instance.ItemPrice[j] * 20 / 100);
+
+        if (Sale * DataManager.Instance.MarketItemCnt <= DataManager.Instance.HaveMoney)
         {
-            Debug.Log("주문을 완료했습니다.");
+            Debug.Log($"주문을 완료했습니다. -{Sale * DataManager.Instance.MarketItemCnt}");
 
             while (true)
             {
-                DataManager.Instance.OrderData.Add(j);
+                DataManager.Instance.MarketOrderData.Add(j);
+                DataManager.Instance.HaveMoney -= Sale;
                 DataManager.Instance.MarketItemCnt--;
 
                 if (DataManager.Instance.MarketItemCnt <= 0) break;
             }
+
+            MarketCntReset();
         }
         else
         {
             Debug.Log("보유한 돈이 부족합니다.");
         }
-
-        MarketCntReset();
     }
 
     internal void MarketCntReset()
     {
         DataManager.Instance.MarketItemCnt = 0;
         MarketCntSign();
+    }
+
+    public void GameOff()
+    {
+        Application.Quit();
     }
 }

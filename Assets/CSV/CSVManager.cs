@@ -12,7 +12,8 @@ public class CSVManager : MonoBehaviour
         Instance = this;
 
         csvdata.ItemData = CSVReader.Read("ItemData");
+        csvdata.CustomMessage = CSVReader.Read("CustomerMEs");
+
+        DataManager.Instance.DataInput();
     }
-
-
 }

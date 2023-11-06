@@ -5,5 +5,5 @@ using UnityEngine;
 public class CSVData
 {
     public List<Dictionary<string, object>> ItemData;
-
+    public List<Dictionary<string, object>> CustomMessage;
 }

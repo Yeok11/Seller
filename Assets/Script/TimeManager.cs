@@ -10,6 +10,8 @@ public class TimeManager : SingleTon<TimeManager>
     internal float TimeData;
     OpenSystem OpSys;
 
+    [SerializeField] internal GameObject WeekList;
+
     private void Awake()
     {
         DM = DataManager.Instance;
@@ -36,6 +38,8 @@ public class TimeManager : SingleTon<TimeManager>
         transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = DM.Days + "¿œ";
 
         SubSystemManager.Instance.MarketScheduleUpdate();
+        StopCoroutine(CustomerManager.Instance.SpawnDelay());
+        
 
         TimeData = 0;
 
@@ -43,15 +47,29 @@ public class TimeManager : SingleTon<TimeManager>
         {
             CounterManager.Instance.AddItem();
         }
+        else if (DM.Days % 7 ==0)
+        {
+            OpenSystem.Check_WeekList = false;
+        }
+        
 
         HourTimer();
     }
 
     internal void HourTimer()
     {
-        transform.GetChild(2).GetChild(0).GetComponent<Image>().fillAmount = 1 - TimeData / 24;
+        transform.GetChild(2).GetChild(0).GetComponent<Image>().fillAmount = 1 - TimeData / (24 + (24 * DM.BonusPer[0, DM.InteriorLevel[0] - 1] / 100));
 
-        if (transform.GetChild(2).GetChild(0).GetComponent<Image>().fillAmount == 0 && DM.NowOpen == true) OpSys.OnPointerDown(null);
+        if (transform.GetChild(2).GetChild(0).GetComponent<Image>().fillAmount == 0)
+        {
+            CustomerManager.Instance.OrderNowDo = false;
+            if (DM.NowOpen == true)
+            {
+                OpSys.OnPointerDown(null);
+            }
+        }
+            
+            
     }
 
     private void Update()

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using System;
+using System.Linq;
 
 [HideInInspector]
 public class CounterManager : SingleTon<CounterManager>
@@ -92,12 +92,12 @@ public class CounterManager : SingleTon<CounterManager>
 
     internal void AddItem()
     {
-        int j = DM.OrderData.Count;
+        int j = DM.MarketOrderData.Count;
 
         for (int i = 0; i < j; i++)
         {
-            DM.ItemCount[DM.OrderData[0]]++;
-            DM.OrderData.RemoveAt(0);
+            DM.ItemCount[DM.MarketOrderData[0]]++;
+            DM.MarketOrderData.RemoveAt(0);
         }
 
         Debug.Log("물건이 배달 되었습니다.");
@@ -128,11 +128,18 @@ public class CounterManager : SingleTon<CounterManager>
 
     public void Monitor_Sell()
     {
-        Debug.Log("아이템 판매가 성공 하셨습니다.");
+        if (CustomerManager.Instance.OrderNowDo == false)
+        {
+            Debug.Log("아이템 판매가 성공 하셨습니다.");
 
-        JudgeSell_Items();
-        MonitorReset();
-        CM.ResetCustomer();
+
+            DM.MarketOrderData.Clear();
+            ItemSellDatas.Clear();
+
+            JudgeSell_Items();
+            MonitorReset();
+            CM.ResetCustomer();
+        }
     }
 
     private void MonitorReset()

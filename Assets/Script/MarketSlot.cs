@@ -9,6 +9,8 @@ public class MarketSlot : SingleTon<MarketSlot>, IPointerDownHandler
 {
     [SerializeField] internal Transform InfoDataPos;
 
+    internal int PosNum;
+
     public void OnPointerDown(PointerEventData eventData)
     {
         if (InfoDataPos.parent.gameObject.activeSelf == false)
@@ -36,5 +38,27 @@ public class MarketSlot : SingleTon<MarketSlot>, IPointerDownHandler
         InfoDataPos.GetChild(1).GetComponent<Image>().sprite = transform.GetChild(1).GetComponent<Image>().sprite;
 
         SubSystemManager.Instance.MarketCntReset();
+    }
+
+    private void Update()
+    {
+        TextUpdate();
+    }
+
+    void TextUpdate()
+    {
+        transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().text = DataManager.Instance.ItemPrice[PosNum].ToString();
+    }
+
+    void Start()
+    {
+        for (int i = 0; i < DataManager.Instance.ItemTypeCount; i++)
+        {
+            if (transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text == DataManager.Instance.ItemType[i])
+            {
+                PosNum = i;
+                break;
+            }
+        }
     }
 }
