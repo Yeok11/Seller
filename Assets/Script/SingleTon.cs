@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class SingleTon<T> : MonoBehaviour where T: Component
+public class SingleTon<T> : MonoBehaviour where T: MonoBehaviour
 {
     private static T instance;
     public static T Instance
@@ -11,19 +9,14 @@ public class SingleTon<T> : MonoBehaviour where T: Component
         {
             if (instance == null)
             {
-                instance = FindObjectOfType<T>();
+                instance = (T)FindObjectOfType(typeof(T));
+
                 if (instance == null)
                 {
-                    GameObject newInstance = new GameObject();
-                    instance = newInstance.AddComponent<T>();
+                    instance = new GameObject(typeof(T).ToString()).AddComponent<T>();
                 }
             }
             return instance;
         }
-    }
-
-    private void Awake()
-    {
-        instance = this as T;
     }
 }

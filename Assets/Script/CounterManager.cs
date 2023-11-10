@@ -8,22 +8,22 @@ using System.Linq;
 public class CounterManager : SingleTon<CounterManager>
 {
     private GameObject Shelf;
+    Transform SellPos;
+
     private GameObject[] Slot = new GameObject[15];
 
     [SerializeField] private TextMeshProUGUI SellData;
     [SerializeField] private TextMeshProUGUI TotalSign;
+
     private TextMeshProUGUI[] SellDatas = new TextMeshProUGUI[15];
-    Transform SellPos;  
 
     DataManager DM;
-    CustomerManager CM;
 
     List<string> ItemSellDatas = new List<string>();
 
-    void Start()
+    private void Start()
     {
         DM = DataManager.Instance;
-        CM = GameObject.Find("CustomerManager").GetComponent<CustomerManager>();
 
         Shelf = GameObject.Find("Shelf_Contants");
         SellPos = GameObject.Find("Sell_Contants").transform;
@@ -33,7 +33,7 @@ public class CounterManager : SingleTon<CounterManager>
             Slot[i] = Shelf.transform.GetChild(i).gameObject;
 
             Slot[i].transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = DM.ItemCount[i].ToString();
-            Slot[i].transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().text = DM.ItemPrice[i].ToString();
+            Slot[i].transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().text = DM.ItemType[i];
 
             SellDatas[i] = Instantiate(SellData, SellPos);
         }
@@ -75,6 +75,7 @@ public class CounterManager : SingleTon<CounterManager>
                 //판단을 위해 리스트에 따로 저장
                 ItemSellDatas.Add(SellDatas[NullDataPos].text);
 
+                //선반 표시
                 ShelfReset();
             }
             else Debug.Log("더 이상 물건이 없습니다.");
@@ -84,9 +85,65 @@ public class CounterManager : SingleTon<CounterManager>
 
     private void JudgeSell_Items()
     {
-        for (int i = 0; i < ItemSellDatas.Count; i++)
+        int i = 0;
+        int AG = ItemSellDatas.Count();
+
+    ReSet:
+        for (int j = 0; j < DM.CustomerOrderData.Count; j++)
         {
-            Debug.Log(ItemSellDatas[i]);
+            if (ItemSellDatas.Count() == 0 || DM.CustomerOrderData.Count() == 0)
+            {
+                break;
+            }
+            
+
+            Debug.Log("판매 물건 : " + ItemSellDatas[i] + " / 손님이 주문한 물건" + DM.CustomerOrderData[j]);
+
+            if (ItemSellDatas[i] == DM.CustomerOrderData[j])
+            {
+                if ((ItemSellDatas.FindAll(a => a.Contains(ItemSellDatas[i]))).Count == (DM.CustomerOrderData.FindAll(b => b.Contains(DM.CustomerOrderData[j]))).Count)
+                {
+                    Debug.Log("완전 일치 : " + ItemSellDatas[i]);
+                    SellAndGetMoney(1, i);
+                }
+                else if ((ItemSellDatas.FindAll(a => a.Contains(ItemSellDatas[i]))).Count > (DM.CustomerOrderData.FindAll(b => b.Contains(DM.CustomerOrderData[j]))).Count)
+                {
+                    Debug.Log("주문 수량보다 많습니다. : " + ItemSellDatas[i]);
+                    SellAndGetMoney(0.7f, i);
+                }
+                else if ((ItemSellDatas.FindAll(a => a.Contains(ItemSellDatas[i]))).Count < (DM.CustomerOrderData.FindAll(b => b.Contains(DM.CustomerOrderData[j]))).Count)
+                {
+                    Debug.Log("주문 수량보다 적습니다. : " + ItemSellDatas[i]);
+                    SellAndGetMoney(0.7f, i);
+                }
+                
+                ItemSellDatas.RemoveAt(i);
+                DM.CustomerOrderData.RemoveAt(j);
+
+                goto ReSet;
+            }
+        }
+
+        if (i < AG - i)
+        {
+            i++;
+            goto ReSet;
+        }
+
+        ItemSellDatas.Clear();
+        DM.CustomerOrderData.Clear();
+    }
+
+    private void SellAndGetMoney(float per, int ItemCode)
+    {
+        for (int i = 0; i < DM.ItemType.Length; i++)
+        {
+            if (ItemSellDatas[ItemCode] == DM.ItemType[i])
+            {
+                DM.HaveMoney += (int)(DM.ItemPrice[i] * per);
+                Debug.Log($"+{(int)(DM.ItemPrice[i] * per)} 만큼 골드를 획득하셨습니다.");
+                break;
+            }
         }
     }
 
@@ -120,6 +177,8 @@ public class CounterManager : SingleTon<CounterManager>
             DM.ItemCount[i] += DM.ItemCount_Sell[i];
         }
 
+        ItemSellDatas.Clear();
+
         Debug.Log("아이템 판매가 취소 되셨습니다.");
 
         ShelfReset();
@@ -132,13 +191,9 @@ public class CounterManager : SingleTon<CounterManager>
         {
             Debug.Log("아이템 판매가 성공 하셨습니다.");
 
-
-            DM.MarketOrderData.Clear();
-            ItemSellDatas.Clear();
-
             JudgeSell_Items();
             MonitorReset();
-            CM.ResetCustomer();
+            CustomerManager.Instance.ResetCustomer();
         }
     }
 
@@ -153,10 +208,5 @@ public class CounterManager : SingleTon<CounterManager>
 
             if (SellDatas[i].gameObject.activeSelf == true) SellDatas[i].gameObject.SetActive(false);
         }
-    }
-
-    void Error()
-    {
-        Debug.Log("Error");
     }
 }

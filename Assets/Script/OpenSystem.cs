@@ -7,7 +7,6 @@ using UnityEngine.EventSystems;
 public class OpenSystem : MonoBehaviour, IPointerDownHandler
 {
     DataManager DM;
-    CustomerManager CM;
 
     TextMeshProUGUI Contants;
 
@@ -16,7 +15,7 @@ public class OpenSystem : MonoBehaviour, IPointerDownHandler
     private void Awake()
     {
         DM = DataManager.Instance;
-        CM = GameObject.Find("CustomerManager").GetComponent<CustomerManager>();
+
         Contants = GetComponentInChildren<TextMeshProUGUI>();
 
         Check_WeekList = true;
@@ -42,8 +41,8 @@ public class OpenSystem : MonoBehaviour, IPointerDownHandler
 
                 Contants.text = DM.OpCl[2];
                 DM.NowOpen = false;
-                CM.ResetCustomer();
-                TimeManager.Instance.TimeData = 24;
+                CustomerManager.Instance.ResetCustomer();
+                TimeManager.Instance.TimeData = 30;
                 TimeManager.Instance.HourTimer();
             }
         }
@@ -52,7 +51,7 @@ public class OpenSystem : MonoBehaviour, IPointerDownHandler
         {
            Contants.text = DM.OpCl[0];
             DM.NowOpen = true;
-            StartCoroutine(CM.SpawnDelay());
+            StartCoroutine(CustomerManager.Instance.SpawnDelay());
         }
         //영업 종료 -> 영업 준비
         else if(Contants.text == DM.OpCl[2])
@@ -66,7 +65,6 @@ public class OpenSystem : MonoBehaviour, IPointerDownHandler
             {
                 Debug.Log("주간일지를 확인하세요.");
             }
-            
         }
     }
 }

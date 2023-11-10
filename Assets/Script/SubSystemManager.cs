@@ -11,21 +11,18 @@ public class SubSystemManager : SingleTon<SubSystemManager>
     [SerializeField] TextMeshProUGUI MarketSchedule;
 
     [SerializeField] private Transform BagContants;
-
     [SerializeField] Transform InteriorLists;
-
-    private void Awake()
-    {
-        BtList_Obj = GameObject.Find("BtList");
-        BtList_Obj.SetActive(false);
-    }
 
     private void Start()
     {
+        BtList_Obj = GameObject.Find("BtList");
+        BtList_Obj.SetActive(false);
+
         BagItemReset();
         InteriorUpdate();
     }
 
+    //전체 설정
     public void BtTurn(int BtType)
     {
         GameObject _BtList;
@@ -36,8 +33,6 @@ public class SubSystemManager : SingleTon<SubSystemManager>
         if (_BtList.activeSelf == false) SubWindowOff(_BtList);
         else { _BtList.SetActive(false); }
     }
-
-    
     public void SubWindowOff(GameObject OpenObject)
     {
         BtList_Obj.transform.GetChild(0).GetChild(0).gameObject.SetActive(false);
@@ -50,7 +45,6 @@ public class SubSystemManager : SingleTon<SubSystemManager>
         if (OpenObject.name == "BagWindow") BagItemReset();
     }
 
-
     //창고
     private void BagItemReset()
     {
@@ -62,7 +56,7 @@ public class SubSystemManager : SingleTon<SubSystemManager>
         }
     }
 
-
+    //인테리어
     public void InteriorUpgrade(int j)
     {
         if (DataManager.Instance.NextCost[j] <= DataManager.Instance.HaveMoney && DataManager.Instance.InteriorLevel[j] < 5)
@@ -76,7 +70,6 @@ public class SubSystemManager : SingleTon<SubSystemManager>
             Debug.Log("잔액이 부족합니다.");
         }
     }
-
     private void InteriorUpdate()
     {
         for (int i = 0; i < 4; i++)
@@ -99,22 +92,15 @@ public class SubSystemManager : SingleTon<SubSystemManager>
         InteriorLists.GetChild(3).GetChild(2).GetComponent<TextMeshProUGUI>().text = $"전 제품 판매가 {DataManager.Instance.BonusPer[3, (DataManager.Instance.InteriorLevel[3] - 1)]}% 상승";
     }
 
-
-
-
-
-
-    //상점 세부 창
+    //상점
     private void MarketCntSign()
     {
         DataManager.Instance.MarketBtsPos.transform.GetChild(0).GetComponentInChildren<TextMeshProUGUI>().text = DataManager.Instance.MarketItemCnt.ToString();
     }
-
     internal void MarketScheduleUpdate()
     {
         MarketSchedule.text = $"다음 상인 방문까지 : {ScheduleJudge()}일";
     }
-
     private int ScheduleJudge()
     {
         if (DataManager.Instance.Days % 7 < 3)
@@ -126,7 +112,6 @@ public class SubSystemManager : SingleTon<SubSystemManager>
             return 10 - DataManager.Instance.Days % 7;
         }
     }
-
     public void MarketCntUp(bool Ctrl)
     {
         if (Ctrl == true && DataManager.Instance.MarketItemCnt != 99) DataManager.Instance.MarketItemCnt += 1;
@@ -134,7 +119,6 @@ public class SubSystemManager : SingleTon<SubSystemManager>
         
         MarketCntSign();
     }
-
     public void MarketBuyItem()
     {
         
@@ -171,13 +155,13 @@ public class SubSystemManager : SingleTon<SubSystemManager>
             Debug.Log("보유한 돈이 부족합니다.");
         }
     }
-
     internal void MarketCntReset()
     {
         DataManager.Instance.MarketItemCnt = 0;
         MarketCntSign();
     }
 
+    //설정
     public void GameOff()
     {
         Application.Quit();

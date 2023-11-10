@@ -7,23 +7,25 @@ using UnityEngine.UI;
 public class TimeManager : SingleTon<TimeManager>
 {
     DataManager DM;
+    [SerializeField] OpenSystem OPS;
     internal float TimeData;
-    OpenSystem OpSys;
 
     [SerializeField] internal GameObject WeekList;
 
     private void Awake()
     {
         DM = DataManager.Instance;
-        OpSys = GameObject.Find("OpenSign").GetComponent<OpenSystem>();
 
-        DM.Weeks.Add("일");
-        DM.Weeks.Add("월");
-        DM.Weeks.Add("화");
-        DM.Weeks.Add("수");
-        DM.Weeks.Add("목");
-        DM.Weeks.Add("금");
-        DM.Weeks.Add("토");
+        DM.Weeks = new List<string>(new string[]
+        {
+            "일",
+            "월",
+            "화",
+            "수",
+            "목",
+            "금",
+            "토"
+        });
     }
 
     private void Start()
@@ -65,11 +67,9 @@ public class TimeManager : SingleTon<TimeManager>
             CustomerManager.Instance.OrderNowDo = false;
             if (DM.NowOpen == true)
             {
-                OpSys.OnPointerDown(null);
+                OPS.OnPointerDown(null);
             }
-        }
-            
-            
+        } 
     }
 
     private void Update()
@@ -80,6 +80,4 @@ public class TimeManager : SingleTon<TimeManager>
             TimeData += Time.deltaTime;
         }
     }
-
-
 }
