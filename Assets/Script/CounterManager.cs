@@ -32,6 +32,8 @@ public class CounterManager : SingleTon<CounterManager>
         {
             Slot[i] = Shelf.transform.GetChild(i).gameObject;
 
+            DM.ItemCount[i] += 10;
+
             Slot[i].transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = DM.ItemCount[i].ToString();
             Slot[i].transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().text = DM.ItemType[i];
 
@@ -96,32 +98,29 @@ public class CounterManager : SingleTon<CounterManager>
                 break;
             }
             
-
-            Debug.Log("판매 물건 : " + ItemSellDatas[i] + " / 손님이 주문한 물건" + DM.CustomerOrderData[j]);
+            //Debug.Log("판매 물건 : " + ItemSellDatas[i] + " / 손님이 주문한 물건" + DM.CustomerOrderData[j]);
 
             if (ItemSellDatas[i] == DM.CustomerOrderData[j])
             {
                 if ((ItemSellDatas.FindAll(a => a.Contains(ItemSellDatas[i]))).Count == (DM.CustomerOrderData.FindAll(b => b.Contains(DM.CustomerOrderData[j]))).Count)
                 {
-                    Debug.Log("완전 일치 : " + ItemSellDatas[i]);
+                    //Debug.Log("완전 일치 : " + ItemSellDatas[i]);
                     SellAndGetMoney(1, i);
                 }
-                else if ((ItemSellDatas.FindAll(a => a.Contains(ItemSellDatas[i]))).Count > (DM.CustomerOrderData.FindAll(b => b.Contains(DM.CustomerOrderData[j]))).Count)
+                else if ((ItemSellDatas.FindAll(a => a.Contains(ItemSellDatas[i]))).Count > (DM.CustomerOrderData.FindAll(b => b.Contains(DM.CustomerOrderData[j]))).Count || ItemSellDatas.FindAll(a => a.Contains(ItemSellDatas[i])).Count < (DM.CustomerOrderData.FindAll(b => b.Contains(DM.CustomerOrderData[j]))).Count)
                 {
-                    Debug.Log("주문 수량보다 많습니다. : " + ItemSellDatas[i]);
+                    //Debug.Log("주문 수량보다 많습니다. : " + ItemSellDatas[i]);
+                    DM.MissCnt[2]++;
                     SellAndGetMoney(0.7f, i);
                 }
-                else if ((ItemSellDatas.FindAll(a => a.Contains(ItemSellDatas[i]))).Count < (DM.CustomerOrderData.FindAll(b => b.Contains(DM.CustomerOrderData[j]))).Count)
-                {
-                    Debug.Log("주문 수량보다 적습니다. : " + ItemSellDatas[i]);
-                    SellAndGetMoney(0.7f, i);
-                }
-                
+
+                DM.SellCnt[2]++;
                 ItemSellDatas.RemoveAt(i);
                 DM.CustomerOrderData.RemoveAt(j);
 
                 goto ReSet;
             }
+            else DM.MissCnt[2]++;
         }
 
         if (i < AG - i)
@@ -142,6 +141,7 @@ public class CounterManager : SingleTon<CounterManager>
             {
                 DM.HaveMoney += (int)(DM.ItemPrice[i] * per);
                 Debug.Log($"+{(int)(DM.ItemPrice[i] * per)} 만큼 골드를 획득하셨습니다.");
+                DM.BuyGold[2] += (int)(DM.ItemPrice[i] * per);
                 break;
             }
         }
@@ -187,12 +187,16 @@ public class CounterManager : SingleTon<CounterManager>
 
     public void Monitor_Sell()
     {
-        if (CustomerManager.Instance.OrderNowDo == false)
+        if (CustomerManager.Instance.OrderNowDo == false && CustomerManager.Instance.CanSell == true)
         {
             Debug.Log("아이템 판매가 성공 하셨습니다.");
 
+            DM.MoneySound.Play();
+
             JudgeSell_Items();
+            StopAllCoroutines();
             MonitorReset();
+            CustomerManager.Instance.CanSell = false;
             CustomerManager.Instance.ResetCustomer();
         }
     }

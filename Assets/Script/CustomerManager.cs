@@ -11,29 +11,47 @@ public class CustomerManager : SingleTon<CustomerManager>
     internal bool OrderNowDo;
 
     int CustomerType;
-
+    internal float del;
+    int Gender;
+    internal bool CanSell = false;
 
     //손님 등장 시간 조절
     internal IEnumerator SpawnDelay()
     {
-        int i = DataManager.Instance.BonusPer[1, DataManager.Instance.InteriorLevel[1]];
+        //SpawnDelay = StartCoroutine(SpawnDelay());
 
-        float del = Random.Range(1f - i / (100 + i), 4f - i / (100 + i));
+        int i = DataManager.Instance.BonusPer[1, DataManager.Instance.InteriorLevel[1]];
+        Gender = Random.Range(0, 2);
+
+        del = Random.Range(1f - i / (100 + i), 4f - i / (100 + i));
 
         Debug.Log(del);
-        OrderNowDo = true;
 
         yield return new WaitForSeconds(del);
+        OrderNowDo = true;
 
-        if (DataManager.Instance.NowOpen == true) SpawnCustomer();
+        if (DataManager.Instance.NowOpen == true && OrderNowDo == true && del != 0) SpawnCustomer();
+    }
+
+    private void AllCustomerCut()
+    {
+        for (int i = 0; i < transform.childCount - 1; i++)
+        {
+            transform.GetChild(i).GetChild(0).gameObject.SetActive(false);
+            transform.GetChild(i).GetChild(1).gameObject.SetActive(false);
+        }
     }
 
     //손님 소환
-    internal void SpawnCustomer()
+    private void SpawnCustomer()
     {
+        AllCustomerCut();
+
         NowCustomer = transform.GetChild(RandomCustomer()).gameObject;
         NowCustomer.SetActive(true);
-        NowCustomer.transform.GetChild(Random.Range(0, 2)).gameObject.SetActive(true);
+        NowCustomer.transform.GetChild(Gender).gameObject.SetActive(true);
+        //Debug.Log(NowCustomer.transform.GetChild(Gender).gameObject);
+        DataManager.Instance.ComeCustomerCnt[2]++;
 
         StartCoroutine(CustomerOrder());
     }
@@ -71,21 +89,18 @@ public class CustomerManager : SingleTon<CustomerManager>
     }
 
     //주문 시작
-    private IEnumerator CustomerOrder()
+    internal IEnumerator CustomerOrder()
     {
         yield return new WaitForSeconds(0.25f);
-
-        CustomerOrderPos.GetChild(0).gameObject.SetActive(true);
-
-        yield return new WaitForSeconds(0.15f);
-
-        if (OrderNowDo == true)
+        
+        if (OrderNowDo == true && del != 0)
         {
+            CustomerOrderPos.GetChild(0).gameObject.SetActive(true);
             CustomerOrderPos.GetChild(1).gameObject.SetActive(true);
             OrderMessage();
+            OrderNowDo = false;
+            CanSell = true;
         }
-
-        OrderNowDo = false;
     }
 
     //주문 설정
@@ -95,10 +110,10 @@ public class CustomerManager : SingleTon<CustomerManager>
         int OrderCnt = Random.Range(0,100);
 
         #region 날짜 비례 확률로 변환
-        int BonusValue1 = DataManager.Instance.OrderCntPer[DataManager.Instance.Days, 0];
-        int BonusValue2 = BonusValue1 + DataManager.Instance.OrderCntPer[DataManager.Instance.Days, 1];
-        int BonusValue3 = BonusValue2 + DataManager.Instance.OrderCntPer[DataManager.Instance.Days, 2];
-        int BonusValue4 = BonusValue3 + DataManager.Instance.OrderCntPer[DataManager.Instance.Days, 3];
+        int BonusValue1 = DataManager.Instance.OrderCntPer[DataManager.Instance.Days / (DataManager.Instance.MaxDay / 10), 0];
+        int BonusValue2 = BonusValue1 + DataManager.Instance.OrderCntPer[DataManager.Instance.Days / (DataManager.Instance.MaxDay / 10), 1];
+        int BonusValue3 = BonusValue2 + DataManager.Instance.OrderCntPer[DataManager.Instance.Days / (DataManager.Instance.MaxDay / 10), 2];
+        int BonusValue4 = BonusValue3 + DataManager.Instance.OrderCntPer[DataManager.Instance.Days / (DataManager.Instance.MaxDay / 10), 3];
 
         if (OrderCnt < 20 + BonusValue1) OrderCnt = 1;
         else if (OrderCnt < 35 + BonusValue2) OrderCnt = 2;
@@ -114,17 +129,22 @@ public class CustomerManager : SingleTon<CustomerManager>
         int RangeValue = FindRange();
         
         //이미 있는 지 확인하고 있다면 다시 설정
-        for (int j = 0; j < AgainTime.Count - 1; j++)
-        {
-            if (RangeValue == AgainTime[j]) goto More;
-        }
+        for (int j = 0; j < AgainTime.Count; j++) if (RangeValue == AgainTime[j]) goto More;
 
         Debug.Log("손님 종류는 : " + CustomerType);
         // 수량 설정
         if (CustomerType < 5)
         {
-            int objCnt = Random.Range(1,6);
-            Debug.Log("수량 : " + objCnt + " / 아이템 : " + RangeValue);
+            //물건 개수
+            int objCnt = Random.Range(0,100);
+            //Debug.Log("수량 : " + objCnt + " / 아이템 품번 : " + RangeValue);
+
+            if (objCnt < 20 + BonusValue1) objCnt = 1;
+            else if (objCnt < 30 + BonusValue2) objCnt = 2;
+            else if (objCnt < 40 + BonusValue3) objCnt = 3;
+            else if (objCnt < 45 + BonusValue4) objCnt = 4;
+            else if (objCnt < 50 + BonusValue4) objCnt = 5;
+
 
             for (int j = 0; j < objCnt; j++)
             {
@@ -168,9 +188,14 @@ public class CustomerManager : SingleTon<CustomerManager>
                 }
             }
         }
-        else
+        else //귀족용 물건 10개 고정
         {
+            for (int j = 0; j < 10; j++)
+            {
+                AgainTime.Add(RangeValue);
 
+                DataManager.Instance.CustomerOrderData.Add(CSVManager.Instance.csvdata.ItemData[RangeValue + 9]["ItemName"].ToString());
+            }
         }
 
         i++;
@@ -179,29 +204,63 @@ public class CustomerManager : SingleTon<CustomerManager>
         // 메시지 초기화
         CustomerOrderPos.GetChild(1).GetComponent<TextMeshProUGUI>().text = "";
 
+        //교집합으로 중복 삭제 후 값 하나씩으로 배분
         List<int> textContents = AgainTime.Intersect(AgainTime).ToList();
 
         //메시지 설정
         for (i = 0; i < textContents.Count(); i++)
         {
-            string TextContents = DataManager.Instance.Message[CustomerType, textContents[i]];
-            
-            CustomerOrderPos.GetChild(1).GetComponent<TextMeshProUGUI>().text += TextContents + " ";
+            string TextContents = "";
+
+            int OrdCnt = FindItemCnt(AgainTime);
+
+            switch (DataManager.GameDif)
+            {
+                case Diff.Easy:
+                    TextContents = DataManager.Instance.EasyMessage[CustomerType, textContents[i]];
+                    break;
+
+                case Diff.Normal:
+                    if (Random.Range(0, 100) < 20 + DataManager.Instance.Days)
+                        TextContents = DataManager.Instance.NormalMessage[CustomerType, textContents[i]];
+                    else TextContents = DataManager.Instance.EasyMessage[CustomerType, textContents[i]];
+
+                    break;
+
+                case Diff.Hard:
+                    TextContents = DataManager.Instance.NormalMessage[CustomerType, textContents[i]];
+                    break;
+            }
+
+            CustomerOrderPos.GetChild(1).GetComponent<TextMeshProUGUI>().text += TextContents + OrdCnt + DataManager.Instance.CntMes[CustomerType] + "\n";
+            AgainTime.RemoveRange(0,OrdCnt);
         }
         #endregion
+    }
+
+    int FindItemCnt(List<int> _sources)
+    {
+        _sources.Add(99);
+        for (int i = 0; i < _sources.Count; i++)
+        {
+            if (_sources.First() != _sources[i])
+            {
+                return i--;
+            }
+        }
+        return 99;
     }
 
     private int FindRange()
     {
         int i;
-        for (i = 0; i < DataManager.Instance.Message.GetLength(0); i++)
-            if (DataManager.Instance.Message[CustomerType, i] == null) break;
+        for (i = 0; i < DataManager.Instance.NormalMessage.GetLength(0); i++)
+            if (DataManager.Instance.NormalMessage[CustomerType, i] == null) break;
             
     back:
-
         int j = Random.Range(0, i);
 
-        if (DataManager.Instance.Message[CustomerType,j] == "null") goto back;
+        if (DataManager.Instance.NormalMessage[CustomerType,j] == "null") goto back;
 
         return j;
     }

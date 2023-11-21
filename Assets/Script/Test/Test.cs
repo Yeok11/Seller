@@ -4,16 +4,38 @@ using UnityEngine;
 
 public class Test : MonoBehaviour
 {
-    string[] ItemType = new string[15];
-
     private void Start()
     {
-        
+        StartCoroutine(tester());
     }
 
-    public void A()
+    private void Update()
     {
-        Debug.Log(CSVManager.Instance.csvdata.ItemData[1]["ItemName"].ToString());
-        Debug.Log(gameObject.name);
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            StopCoroutine("tester");
+            Debug.Log("ÄÆ");
+        }
+        if (Input.GetKeyDown(KeyCode.D))
+        {
+            StartCoroutine(tester());
+            Debug.Log("Àç½ÃÀÛ");
+        }
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            StopAllCoroutines();
+            Debug.Log("¸ðµÎ ÄÆ");
+        }
+    }
+
+    IEnumerator tester()
+    {
+        int i = 1;
+        while (true)
+        {
+            yield return new WaitForSeconds(1);
+            Debug.Log(i + "ÃÊ");
+            i++;
+        }
     }
 }

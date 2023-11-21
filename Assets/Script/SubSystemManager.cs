@@ -1,7 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.Audio;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class SubSystemManager : SingleTon<SubSystemManager>
 {
@@ -13,14 +14,71 @@ public class SubSystemManager : SingleTon<SubSystemManager>
     [SerializeField] private Transform BagContants;
     [SerializeField] Transform InteriorLists;
 
+    [SerializeField] Transform MarketDataPos;
+    [SerializeField] GameObject MarketItemInfo;
+
+    public AudioMixer mixer;
+
+    public Slider masterSlider;
+    public Slider bgmSlider;
+    public Slider effectSlider;
+
+    internal float PrimarySale;
+
+
     private void Start()
     {
+        switch (DataManager.GameDif)
+        {
+            case Diff.Easy:
+                PrimarySale = 0.15f;
+                break;
+
+            case Diff.Normal:
+                PrimarySale = 0.5f;
+                break;
+
+            case Diff.Hard:
+                PrimarySale = 0.3f;
+                break;
+
+            default:
+                PrimarySale = 0f;
+                break;
+        }
+
         BtList_Obj = GameObject.Find("BtList");
         BtList_Obj.SetActive(false);
 
         BagItemReset();
         InteriorUpdate();
     }
+
+    #region 소리
+    public void MasterCtrl()
+    {
+        float volume = masterSlider.value;
+
+        if (volume == -40f) mixer.SetFloat("Master", -80);
+        else mixer.SetFloat("Master", volume);
+    }
+
+    public void BGMCtrl()
+    {
+        float volume = bgmSlider.value;
+
+        if (volume == -40f) mixer.SetFloat("BGM", -80);
+        else mixer.SetFloat("BGM", volume);
+    }
+
+    public void EffectCtrl()
+    {
+        float volume = effectSlider.value;
+
+        if (volume == -40f) mixer.SetFloat("Effect", -80);
+        else mixer.SetFloat("Effect", volume);
+    }
+    #endregion
 
     //전체 설정
     public void BtTurn(int BtType)
@@ -41,7 +99,7 @@ public class SubSystemManager : SingleTon<SubSystemManager>
         BtList_Obj.transform.GetChild(3).GetChild(0).gameObject.SetActive(false);
 
         if (OpenObject != null) OpenObject.SetActive(true);
-        if (OpenObject.name == "MarketWindow") MarketSlot.Instance.InfoDataPos.parent.gameObject.SetActive(false);
+        if (OpenObject.name == "MarketWindow") MarketItemInfo.gameObject.SetActive(false);
         if (OpenObject.name == "BagWindow") BagItemReset();
     }
 
@@ -59,9 +117,9 @@ public class SubSystemManager : SingleTon<SubSystemManager>
     //인테리어
     public void InteriorUpgrade(int j)
     {
-        if (DataManager.Instance.NextCost[j] <= DataManager.Instance.HaveMoney && DataManager.Instance.InteriorLevel[j] < 5)
+        if (DataManager.Instance.NextCost[j, DataManager.Instance.InteriorLevel[j] -1] <= DataManager.Instance.HaveMoney && DataManager.Instance.InteriorLevel[j] < 5)
         {
-            DataManager.Instance.HaveMoney -= DataManager.Instance.NextCost[j];
+            DataManager.Instance.HaveMoney -= DataManager.Instance.NextCost[j, DataManager.Instance.InteriorLevel[j] -1];
             DataManager.Instance.InteriorLevel[j]++;
             InteriorUpdate();
         }
@@ -83,7 +141,7 @@ public class SubSystemManager : SingleTon<SubSystemManager>
             {
                 InteriorLists.GetChild(i).GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>().text = "Lv.Max";
             }
-            InteriorLists.GetChild(i).GetChild(3).GetComponent<TextMeshProUGUI>().text = DataManager.Instance.NextCost[i].ToString();
+            InteriorLists.GetChild(i).GetChild(3).GetComponent<TextMeshProUGUI>().text = DataManager.Instance.NextCost[i, DataManager.Instance.InteriorLevel[i]-1].ToString();
         }
 
         InteriorLists.GetChild(0).GetChild(2).GetComponent<TextMeshProUGUI>().text = $"영업 시간 {DataManager.Instance.BonusPer[0,(DataManager.Instance.InteriorLevel[0] - 1)]}% 연장";
@@ -132,12 +190,12 @@ public class SubSystemManager : SingleTon<SubSystemManager>
             }
         }
 
-        //판매가 - 인테리어 세일값 - 기본 20% 매입 감소
-        int Sale = DataManager.Instance.ItemPrice[j] - (DataManager.Instance.ItemPrice[j] * DataManager.Instance.InteriorLevel[2] / 100) - (DataManager.Instance.ItemPrice[j] * 20 / 100);
+        //매입가 = 판매가 - 인테리어 세일값 - 기본 20% 매입 감소
+        int Sale = DataManager.Instance.ItemPrice[j] - (DataManager.Instance.ItemPrice[j] * DataManager.Instance.BonusPer[DataManager.Instance.InteriorLevel[2],2] / 100) - (int)(DataManager.Instance.ItemPrice[j] * PrimarySale);
 
         if (Sale * DataManager.Instance.MarketItemCnt <= DataManager.Instance.HaveMoney)
         {
-            Debug.Log($"주문을 완료했습니다. -{Sale * DataManager.Instance.MarketItemCnt}");
+            Debug.Log($"주문을 완료했습니다. -{Sale} X {DataManager.Instance.MarketItemCnt}");
 
             while (true)
             {
@@ -147,6 +205,8 @@ public class SubSystemManager : SingleTon<SubSystemManager>
 
                 if (DataManager.Instance.MarketItemCnt <= 0) break;
             }
+
+            DataManager.Instance.UseGold[2] += Sale * DataManager.Instance.MarketItemCnt;
 
             MarketCntReset();
         }
@@ -162,6 +222,11 @@ public class SubSystemManager : SingleTon<SubSystemManager>
     }
 
     //설정
+    public void Title()
+    {
+        SceneManager.LoadScene(1);
+    }
+
     public void GameOff()
     {
         Application.Quit();

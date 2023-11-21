@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public class MarketSlot : SingleTon<MarketSlot>, IPointerDownHandler
 {
-    [SerializeField] internal Transform InfoDataPos;
+    public Transform InfoDataPos;
 
     internal int PosNum;
 
@@ -40,25 +40,30 @@ public class MarketSlot : SingleTon<MarketSlot>, IPointerDownHandler
         SubSystemManager.Instance.MarketCntReset();
     }
 
-    private void Update()
+    public void TextUpdate()
     {
-        TextUpdate();
-    }
+        int price = Mathf.RoundToInt(DataManager.Instance.ItemPrice[PosNum] -
+                (DataManager.Instance.ItemPrice[PosNum] * DataManager.Instance.BonusPer[DataManager.Instance.InteriorLevel[2], 2] / 100) - (int)(DataManager.Instance.ItemPrice[PosNum] * SubSystemManager.Instance.PrimarySale));
 
-    void TextUpdate()
-    {
-        transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().text = DataManager.Instance.ItemPrice[PosNum].ToString();
+        price = Mathf.RoundToInt(price / 10) * 10;
+
+        transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().SetText(price.ToString());
     }
 
     void Start()
     {
-        for (int i = 0; i < DataManager.Instance.ItemTypeCount; i++)
+        if (PosNum == 0)
         {
-            if (transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text == DataManager.Instance.ItemType[i])
+            for (int i = 0; i < DataManager.Instance.ItemTypeCount; i++)
             {
-                PosNum = i;
-                break;
+                if (transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text == DataManager.Instance.ItemType[i])
+                {
+                    PosNum = i;
+                    break;
+                }
             }
         }
+        
+        TextUpdate();
     }
 }

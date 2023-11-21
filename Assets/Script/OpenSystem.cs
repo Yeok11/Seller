@@ -7,7 +7,6 @@ using UnityEngine.EventSystems;
 public class OpenSystem : MonoBehaviour, IPointerDownHandler
 {
     DataManager DM;
-
     TextMeshProUGUI Contants;
 
     internal static bool Check_WeekList;
@@ -34,14 +33,16 @@ public class OpenSystem : MonoBehaviour, IPointerDownHandler
             }
             else
             {
-                if (Check_WeekList == false)
-                {
-                    TimeManager.Instance.WeekList.SetActive(true);
-                }
+                if (Check_WeekList == false) TimeManager.Instance.WeekList.SetActive(true);
 
                 Contants.text = DM.OpCl[2];
                 DM.NowOpen = false;
+                CustomerManager.Instance.OrderNowDo = false;
+                CustomerManager.Instance.del = 0;
+                StopAllCoroutines();
                 CustomerManager.Instance.ResetCustomer();
+                CustomerManager.Instance.CanSell = false;
+                CounterManager.Instance.Monitor_Cancel();
                 TimeManager.Instance.TimeData = 30;
                 TimeManager.Instance.HourTimer();
             }
@@ -51,6 +52,7 @@ public class OpenSystem : MonoBehaviour, IPointerDownHandler
         {
            Contants.text = DM.OpCl[0];
             DM.NowOpen = true;
+            CustomerManager.Instance.OrderNowDo = false;
             StartCoroutine(CustomerManager.Instance.SpawnDelay());
         }
         //영업 종료 -> 영업 준비

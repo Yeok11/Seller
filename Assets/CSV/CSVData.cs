@@ -6,4 +6,6 @@ public class CSVData
 {
     public List<Dictionary<string, object>> ItemData;
     public List<Dictionary<string, object>> CustomMessage;
+    public List<Dictionary<string, object>> EasyCustomMessage;
+    public List<Dictionary<string, object>> DayEvent;
 }

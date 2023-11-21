@@ -13,6 +13,8 @@ public class CSVManager : MonoBehaviour
 
         csvdata.ItemData = CSVReader.Read("ItemData");
         csvdata.CustomMessage = CSVReader.Read("CustomerMEs");
+        csvdata.DayEvent = CSVReader.Read("HappyDay");
+        csvdata.EasyCustomMessage = CSVReader.Read("CustomerEasyMes");
 
         DataManager.Instance.DataInput();
     }

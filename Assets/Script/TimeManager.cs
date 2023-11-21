@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System;
 
 public class TimeManager : SingleTon<TimeManager>
 {
@@ -12,19 +13,22 @@ public class TimeManager : SingleTon<TimeManager>
 
     [SerializeField] internal GameObject WeekList;
 
+    [SerializeField] private Image DayUpdateScene;
+    private float UpdateSceneCnt;
+    [SerializeField] GameObject End;
+
+
+    private List<string> DayEvent = new List<string>();
+
     private void Awake()
     {
         DM = DataManager.Instance;
 
+        for (int i = 0; i < CSVManager.Instance.csvdata.DayEvent.Count; i++) DayEvent.Add(CSVManager.Instance.csvdata.DayEvent[i]["Mes"].ToString());
+
         DM.Weeks = new List<string>(new string[]
         {
-            "일",
-            "월",
-            "화",
-            "수",
-            "목",
-            "금",
-            "토"
+            "일", "월", "화", "수", "목", "금", "토"
         });
     }
 
@@ -33,27 +37,74 @@ public class TimeManager : SingleTon<TimeManager>
         NewDay();
     }
 
+    IEnumerator NewDayMes()
+    {
+        DayUpdateScene.color = new Color(0, 0, 0, 1);
+        DayUpdateScene.transform.GetChild(0).gameObject.SetActive(true);
+        DayUpdateScene.GetComponentInChildren<TextMeshProUGUI>().text = $"Day - {DM.Days}";
+
+        newDayEvent();
+
+        yield return new WaitForSeconds(2f);
+
+        while (true)
+        {
+            yield return new WaitForSeconds(0.005f);
+
+            UpdateSceneCnt -= Time.time;
+
+            DayUpdateScene.color = new Color(0, 0, 0, UpdateSceneCnt);
+
+            if (UpdateSceneCnt <= 0.7) DayUpdateScene.transform.GetChild(0).gameObject.SetActive(false);
+
+            if (UpdateSceneCnt <= 0)
+            {
+                DayUpdateScene.gameObject.SetActive(false);
+                break;
+            }
+        }
+        yield return null;
+    }
+
+    private void newDayEvent()
+    {
+        int EventNum = UnityEngine.Random.Range(0, CSVManager.Instance.csvdata.DayEvent.Count);
+
+        DayUpdateScene.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = DayEvent[EventNum];
+    }
+
     internal void NewDay()
     {
         DM.Days += 1;
+
+        UpdateSceneCnt = 1;
+        DayUpdateScene.gameObject.SetActive(true);
+        StartCoroutine("NewDayMes");
+
         transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = DM.Weeks[DM.Days % 7] + "요일";
         transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = DM.Days + "일";
 
         SubSystemManager.Instance.MarketScheduleUpdate();
-        StopCoroutine(CustomerManager.Instance.SpawnDelay());
+        StopCoroutine("SpawnDelay");
         
-
         TimeData = 0;
 
-        if (DM.Weeks[DM.Days % 7] == "수")
+        if (DM.Days == DM.MaxDay)
         {
-            CounterManager.Instance.AddItem();
+            End.SetActive(true);
+            End.transform.GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>().text = "총 지출액 : " + DM.UseGold[0];
+            End.transform.GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().text = "총 매출액 : " + DM.BuyGold[0];
+            End.transform.GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = "총 차액 : " + (DM.BuyGold[0] - DM.UseGold[0]);
+            End.transform.GetChild(1).GetChild(3).GetComponent<TextMeshProUGUI>().text = "총 손님 방문 횟수 : " + DM.ComeCustomerCnt[0];
+            End.transform.GetChild(1).GetChild(4).GetComponent<TextMeshProUGUI>().text = "실수 횟수 : " + DM.MissCnt[0];
+            End.transform.GetChild(1).GetChild(5).GetComponent<TextMeshProUGUI>().text = "총 판매 횟수 : " + DM.SellCnt[0];
+            End.transform.GetChild(1).GetChild(6).GetComponent<TextMeshProUGUI>().text = "최종 보유 금액 : " + DM.HaveMoney;
+            return;
         }
-        else if (DM.Days % 7 ==0)
-        {
-            OpenSystem.Check_WeekList = false;
-        }
-        
+
+        if (DM.Weeks[DM.Days % 7] == "수") CounterManager.Instance.AddItem();
+        else if (DM.Days % 7 ==0) OpenSystem.Check_WeekList = false;
+
 
         HourTimer();
     }
