@@ -1,57 +1,33 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Test2 : MonoBehaviour
 {
-    float a = 0;
-    private void Update()
-    {
-        a += Time.deltaTime;
-        //Debug.Log("a "+ a);
-
-        if (Input.GetKeyDown(KeyCode.Alpha0))
-        {
-            transform.GetChild(0).gameObject.SetActive(false);
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha9))
-        {
-            transform.GetChild(0).gameObject.SetActive(true);
-        }
-    }
+    int a;
+    Scene ak = new Scene();
 
     private void Start()
     {
-        //b();
+        Debug.Log(a++);
 
-        Debug.Log((float)(0 / 10));
+       //    SceneManager.SetActiveScene(ak);
 
-        for (int i = 0; i < 3; i++)
-        {
-            Debug.Log("3");
-            for (int  j= 0; j < 4; j++)
-            {
-                Debug.Log("2");
-                //break;
-
-                goto skip;
-            }
-        }
-
-    skip:
-        Debug.Log("³¡");
+        
     }
 
-    float c = 0;
-
-    void b()
+    private void Update()
     {
-        while (true)
+        if (Input.GetKeyDown(KeyCode.W))
         {
-            c += Time.deltaTime;
-            Debug.Log("c " + c);
-
-            if (c > 100) break;
+            PlayerPrefs.Save();
+            SceneManager.LoadScene(2);
+        }
+        else if (Input.GetKeyDown(KeyCode.Q))
+        {
+            //PlayerPrefs.Save();
+            SceneManager.LoadScene(2);
         }
     }
 }

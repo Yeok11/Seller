@@ -20,18 +20,8 @@ public class Title : MonoBehaviour
     [SerializeField] private Transform DataPos;
 
     int[] PlayCnt = { 0, 0, 0};
-    int[] BestScore = { 0,0,0 };
-    int[] BestGetMoney = { 0,0,0 };
-
-    int BestHavingMoney;
-    float AllSatisfy;
-    int AllCustomerCnt;
-    int AllMissCnt;
-    int BestMissCnt;
-    int AllBuyItemCnt;
-    int BestBuyItemCnt;
-    int AllSellItemCnt;
-    int BestSellItemCnt;
+    static internal int[] BestScore = { 0,0,0 };
+    static internal int[] BestGetMoney = { 0,0,0 };
 
     bool SetOn = false;
 
@@ -42,8 +32,8 @@ public class Title : MonoBehaviour
 
     private void Start()
     {
-        //DataSave();
-        DataLoad();
+        DataSave();
+        
     }
 
     private void DataSave()
@@ -70,15 +60,10 @@ public class Title : MonoBehaviour
         PlayerPrefs.SetString("ScoreData", strArr1);
         PlayerPrefs.SetString("GetMoneyData", strArr2);
 
-        PlayerPrefs.SetInt("HaveMoney", BestHavingMoney);
-        PlayerPrefs.SetFloat("Satisfy", AllSatisfy);
-        PlayerPrefs.SetInt("Customer", AllCustomerCnt);
-        PlayerPrefs.SetInt("AllMiss", AllMissCnt);
-        PlayerPrefs.SetInt("Miss", BestMissCnt);
-        PlayerPrefs.SetInt("AllBuy", AllBuyItemCnt);
-        PlayerPrefs.SetInt("Buy", BestBuyItemCnt);
-        PlayerPrefs.SetInt("AllSell", AllSellItemCnt);
-        PlayerPrefs.SetInt("Sell", BestSellItemCnt);
+        if (PlayerPrefs.GetInt("Customer") == 0) PlayerPrefs.SetFloat("Satisfy", 100);
+        else PlayerPrefs.SetFloat("Satisfy", 100 - PlayerPrefs.GetInt("AllMiss") / PlayerPrefs.GetInt("Customer") * 100);
+
+        DataLoad();
     }
 
     public void DataReset()
@@ -89,6 +74,17 @@ public class Title : MonoBehaviour
             BestScore[i] = 0;
             BestGetMoney[i] = 0;
         }
+
+        PlayerPrefs.SetInt("HaveMoney", 0);
+        PlayerPrefs.SetFloat("Satisfy", 0);
+        PlayerPrefs.SetInt("Customer", 0);
+        PlayerPrefs.SetInt("AllMiss", 0);
+        PlayerPrefs.SetInt("Miss", 0);
+        PlayerPrefs.SetInt("AllBuy", 0);
+        PlayerPrefs.SetInt("Buy", 0);
+        PlayerPrefs.SetInt("AllSell", 0);
+        PlayerPrefs.SetInt("Sell", 0);
+
         DataSave();
     }
 
@@ -105,19 +101,6 @@ public class Title : MonoBehaviour
             BestGetMoney[i] = System.Convert.ToInt32(dataArr2[i]);
         }
 
-        BestHavingMoney = PlayerPrefs.GetInt("HaveMoney");
-        AllSatisfy = PlayerPrefs.GetFloat("Satisfy");
-        AllMissCnt = PlayerPrefs.GetInt("AllMiss");
-        BestMissCnt = PlayerPrefs.GetInt("Miss");
-        AllBuyItemCnt = PlayerPrefs.GetInt("AllBuy");
-        BestBuyItemCnt = PlayerPrefs.GetInt("Buy");
-        AllBuyItemCnt = PlayerPrefs.GetInt("AllBuy");
-        BestBuyItemCnt = PlayerPrefs.GetInt("Buy");
-        AllSellItemCnt = PlayerPrefs.GetInt("AllSell");
-        BestSellItemCnt = PlayerPrefs.GetInt("Sell");
-        
-
-
 
         DataPos.GetChild(0).GetComponent<TextMeshProUGUI>().SetText("총 장사 횟수 : " + (PlayCnt[0]+PlayCnt[1]+PlayCnt[2]));
         DataPos.GetChild(1).GetComponent<TextMeshProUGUI>().SetText("장사꾼 장사 수 : " + PlayCnt[0]);
@@ -130,15 +113,15 @@ public class Title : MonoBehaviour
         DataPos.GetChild(9).GetComponent<TextMeshProUGUI>().SetText("장사꾼 최대 매출액 : " + BestGetMoney[0]);
         DataPos.GetChild(10).GetComponent<TextMeshProUGUI>().SetText("상인 최대 매출액 : " + BestGetMoney[1]);
         DataPos.GetChild(11).GetComponent<TextMeshProUGUI>().SetText("대상인 최대 매출액 : " + BestGetMoney[2]);
-        DataPos.GetChild(12).GetComponent<TextMeshProUGUI>().SetText("최대 보유금 : " + BestHavingMoney);
-        DataPos.GetChild(14).GetComponent<TextMeshProUGUI>().SetText("총 만족도 : " + AllSatisfy + "%");
-        DataPos.GetChild(14).GetChild(0).GetComponent<TextMeshProUGUI>().SetText("총 손님 수 : " + AllCustomerCnt);
-        DataPos.GetChild(15).GetComponent<TextMeshProUGUI>().SetText("총 실수 횟수 : " + AllMissCnt);
-        DataPos.GetChild(15).GetChild(0).GetComponent<TextMeshProUGUI>().SetText("최대 실수 횟수 : " + BestMissCnt);
-        DataPos.GetChild(16).GetComponent<TextMeshProUGUI>().SetText("총 매입 횟수 : " + AllBuyItemCnt);
-        DataPos.GetChild(16).GetChild(0).GetComponent<TextMeshProUGUI>().SetText("최대 매입 수 : " + BestBuyItemCnt);
-        DataPos.GetChild(17).GetComponent<TextMeshProUGUI>().SetText("총 판매 수 : " + AllSellItemCnt);
-        DataPos.GetChild(17).GetChild(0).GetComponent<TextMeshProUGUI>().SetText("최대 판매 수 : " + BestSellItemCnt);
+        DataPos.GetChild(12).GetComponent<TextMeshProUGUI>().SetText("최대 보유금 : " + PlayerPrefs.GetInt("HaveMoney"));
+        DataPos.GetChild(14).GetComponent<TextMeshProUGUI>().SetText("총 만족도 : " + PlayerPrefs.GetFloat("Satisfy") + "%");
+        DataPos.GetChild(14).GetChild(0).GetComponent<TextMeshProUGUI>().SetText("총 손님 수 : " + PlayerPrefs.GetInt("Customer"));
+        DataPos.GetChild(15).GetComponent<TextMeshProUGUI>().SetText("총 실수 횟수 : " + PlayerPrefs.GetInt("AllMiss"));
+        DataPos.GetChild(15).GetChild(0).GetComponent<TextMeshProUGUI>().SetText("최대 실수 횟수 : " + PlayerPrefs.GetInt("Miss"));
+        DataPos.GetChild(16).GetComponent<TextMeshProUGUI>().SetText("총 매입 횟수 : " + PlayerPrefs.GetInt("AllBuy"));
+        DataPos.GetChild(16).GetChild(0).GetComponent<TextMeshProUGUI>().SetText("최대 매입 수 : " + PlayerPrefs.GetInt("Buy"));
+        DataPos.GetChild(17).GetComponent<TextMeshProUGUI>().SetText("총 판매 수 : " + PlayerPrefs.GetInt("AllSell"));
+        DataPos.GetChild(17).GetChild(0).GetComponent<TextMeshProUGUI>().SetText("최대 판매 수 : " + PlayerPrefs.GetInt("Sell"));
     }
 
     private void Update()

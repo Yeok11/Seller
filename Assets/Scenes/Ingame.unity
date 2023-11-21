@@ -21007,6 +21007,7 @@ MonoBehaviour:
   WeekList: {fileID: 2103986343}
   DayUpdateScene: {fileID: 782512140}
   End: {fileID: 1297073200}
+  Bgm: {fileID: 311066734}
 --- !u!1 &928481417
 GameObject:
   m_ObjectHideFlags: 0
@@ -29290,8 +29291,8 @@ AudioSource:
   m_GameObject: {fileID: 1297073200}
   m_Enabled: 1
   serializedVersion: 4
-  OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 0}
+  OutputAudioMixerGroup: {fileID: 6089258644650120017, guid: 0d97fad98a0dd8843a850517546722ee, type: 2}
+  m_audioClip: {fileID: 8300000, guid: 3d021bcd3c2be144b8aa16502f4b7418, type: 3}
   m_PlayOnAwake: 1
   m_Volume: 1
   m_Pitch: 1
@@ -40731,7 +40732,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1807244381}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 311066733}
+        m_TargetAssemblyTypeName: SubSystemManager, Assembly-CSharp
+        m_MethodName: Title
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1807244381
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -45276,7 +45289,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2050042967}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 311066733}
+        m_TargetAssemblyTypeName: SubSystemManager, Assembly-CSharp
+        m_MethodName: Title
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!114 &2050042967
 MonoBehaviour:
   m_ObjectHideFlags: 0

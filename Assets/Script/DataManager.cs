@@ -5,7 +5,7 @@ using TMPro;
 
 public enum Diff
 {
-    Easy,
+    Easy = 0,
     Normal,
     Hard,
     Event_1
@@ -35,7 +35,7 @@ public class DataManager : SingleTon<DataManager>
     public AudioSource MoneySound;
 
     #region 시간 설정
-    internal int Days = 0;
+    internal int Days = 48;
     internal List<string> Weeks = new List<string>();
 
     internal string[] OpCl = { "영업중", "영업준비", "영업종료" };
@@ -74,6 +74,7 @@ public class DataManager : SingleTon<DataManager>
 
     internal List<int> BuyGold = new List<int>(3) { 0, 0, 0 };
 
+    internal int BuyCnt;
     internal List<int> SellCnt = new List<int>(3) { 0, 0, 0 };
     internal List<int> ComeCustomerCnt = new List<int>(3) { 0, 0, 0 };
     internal List<int> MissCnt = new List<int>(3) { 0, 0, 0 };

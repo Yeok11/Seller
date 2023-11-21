@@ -98,6 +98,7 @@ public class CustomerManager : SingleTon<CustomerManager>
             CustomerOrderPos.GetChild(0).gameObject.SetActive(true);
             CustomerOrderPos.GetChild(1).gameObject.SetActive(true);
             OrderMessage();
+            //DataManager.Instance.ComeCustomerCnt[2] += 1;
             OrderNowDo = false;
             CanSell = true;
         }

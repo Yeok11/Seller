@@ -139,9 +139,11 @@ public class CounterManager : SingleTon<CounterManager>
         {
             if (ItemSellDatas[ItemCode] == DM.ItemType[i])
             {
-                DM.HaveMoney += (int)(DM.ItemPrice[i] * per);
-                Debug.Log($"+{(int)(DM.ItemPrice[i] * per)} ∏∏≈≠ ∞ÒµÂ∏¶ »πµÊ«œºÃΩ¿¥œ¥Ÿ.");
-                DM.BuyGold[2] += (int)(DM.ItemPrice[i] * per);
+                int plus = (int)(DM.ItemPrice[i] * per * (float)(DM.BonusPer[3,DM.InteriorLevel[3] - 1] / 100));
+
+                DM.HaveMoney += (int)(DM.ItemPrice[i] * per) + plus;
+                Debug.Log($"+{(int)(DM.ItemPrice[i] * per)}(+{plus}) ∏∏≈≠ ∞ÒµÂ∏¶ »πµÊ«œºÃΩ¿¥œ¥Ÿ.");
+                DM.BuyGold[2] += (int)(DM.ItemPrice[i] * per) + plus;
                 break;
             }
         }

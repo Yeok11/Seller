@@ -17,6 +17,8 @@ public class TimeManager : SingleTon<TimeManager>
     private float UpdateSceneCnt;
     [SerializeField] GameObject End;
 
+    [SerializeField] AudioSource Bgm;
+
 
     private List<string> DayEvent = new List<string>();
 
@@ -92,6 +94,7 @@ public class TimeManager : SingleTon<TimeManager>
         if (DM.Days == DM.MaxDay)
         {
             End.SetActive(true);
+            Bgm.Stop();
             End.transform.GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>().text = "ÃÑ ÁöÃâ¾× : " + DM.UseGold[0];
             End.transform.GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().text = "ÃÑ ¸ÅÃâ¾× : " + DM.BuyGold[0];
             End.transform.GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = "ÃÑ Â÷¾× : " + (DM.BuyGold[0] - DM.UseGold[0]);
@@ -99,6 +102,19 @@ public class TimeManager : SingleTon<TimeManager>
             End.transform.GetChild(1).GetChild(4).GetComponent<TextMeshProUGUI>().text = "½Ç¼ö È½¼ö : " + DM.MissCnt[0];
             End.transform.GetChild(1).GetChild(5).GetComponent<TextMeshProUGUI>().text = "ÃÑ ÆÇ¸Å È½¼ö : " + DM.SellCnt[0];
             End.transform.GetChild(1).GetChild(6).GetComponent<TextMeshProUGUI>().text = "ÃÖÁ¾ º¸À¯ ±Ý¾× : " + DM.HaveMoney;
+
+            if (PlayerPrefs.GetInt("HaveMoney") < DM.HaveMoney) PlayerPrefs.SetInt("HaveMoney", DM.HaveMoney);
+            PlayerPrefs.SetInt("Customer", PlayerPrefs.GetInt("Customer") + DM.ComeCustomerCnt[0]);
+            PlayerPrefs.SetInt("AllMiss", PlayerPrefs.GetInt("AllMiss") + DM.MissCnt[0]);
+            if (PlayerPrefs.GetInt("Miss") < DM.MissCnt[0]) PlayerPrefs.SetInt("Miss", DM.MissCnt[0]);
+            PlayerPrefs.SetInt("AllBuy", PlayerPrefs.GetInt("AllBuy") + DM.BuyCnt);
+            if (PlayerPrefs.GetInt("Buy") < DM.BuyCnt) PlayerPrefs.SetInt("Buy", DM.BuyCnt);
+            PlayerPrefs.SetInt("AllSell", PlayerPrefs.GetInt("AllSell") + DM.SellCnt[0]);
+            if (PlayerPrefs.GetInt("Sell") < DM.SellCnt[0]) PlayerPrefs.SetInt("Sell", DM.SellCnt[0]);
+            if (Title.BestGetMoney[(int)DataManager.GameDif] < DM.BuyGold[0]) Title.BestGetMoney[(int)DataManager.GameDif] = DM.BuyGold[0];
+
+
+
             return;
         }
 

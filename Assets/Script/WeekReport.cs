@@ -40,9 +40,9 @@ public class WeekReport : MonoBehaviour
 
         LastWeekData.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = (DM.UseGold[2] - DM.UseGold[1]).ToString();
         LastWeekData.GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>().text = (DM.BuyGold[2] - DM.BuyGold[1]).ToString();
-        LastWeekData.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().text = (DM.SellCnt[2] - DM.SellCnt[1]).ToString();
-        LastWeekData.GetChild(3).GetChild(0).GetComponent<TextMeshProUGUI>().text = (DM.ComeCustomerCnt[2] - DM.ComeCustomerCnt[1]).ToString();
-        LastWeekData.GetChild(4).GetChild(0).GetComponent<TextMeshProUGUI>().text = (DM.MissCnt[2] - DM.MissCnt[1]).ToString();
+        LastWeekData.GetChild(2).GetChild(0).GetComponent<TextMeshProUGUI>().SetText((DM.ComeCustomerCnt[2] - DM.ComeCustomerCnt[1]).ToString());
+        LastWeekData.GetChild(3).GetChild(0).GetComponent<TextMeshProUGUI>().text = (DM.MissCnt[2] - DM.MissCnt[1]).ToString();
+        LastWeekData.GetChild(4).GetChild(0).GetComponent<TextMeshProUGUI>().text = (DM.SellCnt[2] - DM.SellCnt[1]).ToString();
 
         DataUpdate();
     }
@@ -50,6 +50,12 @@ public class WeekReport : MonoBehaviour
 
     private void DataUpdate()
     {
+        DM.UseGold[0] += DM.UseGold[2];
+        DM.BuyGold[0] += DM.BuyGold[2];
+        DM.ComeCustomerCnt[0] += DM.ComeCustomerCnt[2];
+        DM.MissCnt[0] += DM.MissCnt[2];
+        DM.SellCnt[0] += DM.SellCnt[2];
+
         DM.UseGold.RemoveAt(1);
         DM.BuyGold.RemoveAt(1);
         DM.ComeCustomerCnt.RemoveAt(1);

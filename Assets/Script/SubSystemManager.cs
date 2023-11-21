@@ -222,9 +222,17 @@ public class SubSystemManager : SingleTon<SubSystemManager>
     }
 
     //¼³Á¤
-    public void Title()
+    public void Title(bool End)
     {
-        SceneManager.LoadScene(1);
+        if (End == false)
+        {
+            SceneManager.LoadScene(1);
+        }
+        else
+        {
+            SceneManager.LoadScene(1);
+        }
+        
     }
 
     public void GameOff()
