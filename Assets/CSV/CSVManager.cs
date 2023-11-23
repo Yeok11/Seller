@@ -15,7 +15,9 @@ public class CSVManager : MonoBehaviour
         csvdata.CustomMessage = CSVReader.Read("CustomerMEs");
         csvdata.DayEvent = CSVReader.Read("HappyDay");
         csvdata.EasyCustomMessage = CSVReader.Read("CustomerEasyMes");
+        csvdata.achieve = CSVReader.Read("Achieve");
 
-        DataManager.Instance.DataInput();
+        if (DataManager.Instance.gameObject != null) DataManager.Instance.DataInput();
+
     }
 }

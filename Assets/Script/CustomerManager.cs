@@ -267,9 +267,15 @@ public class CustomerManager : SingleTon<CustomerManager>
     }
     
     //º’¥‘ ªË¡¶
-    internal void ResetCustomer()
+    internal void ResetCustomer(bool miss)
     {
-        if (NowCustomer != null) NowCustomer.SetActive(false);
+        if (NowCustomer != null)
+        {
+            NowCustomer.SetActive(false);
+            if (miss == true) DataManager.Instance.MissCnt[2]++;
+        }
+
+        NowCustomer = null;
 
         CustomerOrderPos.GetChild(0).gameObject.SetActive(false);
         CustomerOrderPos.GetChild(1).gameObject.SetActive(false);

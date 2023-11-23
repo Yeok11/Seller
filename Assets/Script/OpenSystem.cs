@@ -40,7 +40,7 @@ public class OpenSystem : MonoBehaviour, IPointerDownHandler
                 CustomerManager.Instance.OrderNowDo = false;
                 CustomerManager.Instance.del = 0;
                 StopAllCoroutines();
-                CustomerManager.Instance.ResetCustomer();
+                CustomerManager.Instance.ResetCustomer(true);
                 CustomerManager.Instance.CanSell = false;
                 CounterManager.Instance.Monitor_Cancel();
                 TimeManager.Instance.TimeData = 30;
@@ -53,6 +53,8 @@ public class OpenSystem : MonoBehaviour, IPointerDownHandler
            Contants.text = DM.OpCl[0];
             DM.NowOpen = true;
             CustomerManager.Instance.OrderNowDo = false;
+            SubSystemManager.Instance.CanUseBt = false;
+            SubSystemManager.Instance.BtList_Obj.SetActive(false);
             StartCoroutine(CustomerManager.Instance.SpawnDelay());
         }
         //영업 종료 -> 영업 준비

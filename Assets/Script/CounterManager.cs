@@ -8,18 +8,19 @@ using System.Linq;
 public class CounterManager : SingleTon<CounterManager>
 {
     private GameObject Shelf;
-    Transform SellPos;
+    private Transform SellPos;
 
     private GameObject[] Slot = new GameObject[15];
+   
 
     [SerializeField] private TextMeshProUGUI SellData;
     [SerializeField] private TextMeshProUGUI TotalSign;
 
     private TextMeshProUGUI[] SellDatas = new TextMeshProUGUI[15];
 
-    DataManager DM;
+    private DataManager DM;
 
-    List<string> ItemSellDatas = new List<string>();
+    private List<string> ItemSellDatas = new List<string>();
 
     private void Start()
     {
@@ -32,7 +33,7 @@ public class CounterManager : SingleTon<CounterManager>
         {
             Slot[i] = Shelf.transform.GetChild(i).gameObject;
 
-            DM.ItemCount[i] += 10;
+            DM.ItemCount[i] += 15;
 
             Slot[i].transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = DM.ItemCount[i].ToString();
             Slot[i].transform.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>().text = DM.ItemType[i];
@@ -90,6 +91,10 @@ public class CounterManager : SingleTon<CounterManager>
         int i = 0;
         int AG = ItemSellDatas.Count();
 
+        bool mistake = false;
+
+        if (ItemSellDatas.Count() == 0) mistake = true;
+
     ReSet:
         for (int j = 0; j < DM.CustomerOrderData.Count; j++)
         {
@@ -97,7 +102,7 @@ public class CounterManager : SingleTon<CounterManager>
             {
                 break;
             }
-            
+
             //Debug.Log("판매 물건 : " + ItemSellDatas[i] + " / 손님이 주문한 물건" + DM.CustomerOrderData[j]);
 
             if (ItemSellDatas[i] == DM.CustomerOrderData[j])
@@ -110,8 +115,8 @@ public class CounterManager : SingleTon<CounterManager>
                 else if ((ItemSellDatas.FindAll(a => a.Contains(ItemSellDatas[i]))).Count > (DM.CustomerOrderData.FindAll(b => b.Contains(DM.CustomerOrderData[j]))).Count || ItemSellDatas.FindAll(a => a.Contains(ItemSellDatas[i])).Count < (DM.CustomerOrderData.FindAll(b => b.Contains(DM.CustomerOrderData[j]))).Count)
                 {
                     //Debug.Log("주문 수량보다 많습니다. : " + ItemSellDatas[i]);
-                    DM.MissCnt[2]++;
                     SellAndGetMoney(0.7f, i);
+                    mistake = true;
                 }
 
                 DM.SellCnt[2]++;
@@ -120,8 +125,10 @@ public class CounterManager : SingleTon<CounterManager>
 
                 goto ReSet;
             }
-            else DM.MissCnt[2]++;
+            else mistake = true;
         }
+
+        //if (mistake) DM.MissCnt[2]++;
 
         if (i < AG - i)
         {
@@ -131,6 +138,7 @@ public class CounterManager : SingleTon<CounterManager>
 
         ItemSellDatas.Clear();
         DM.CustomerOrderData.Clear();
+        CustomerManager.Instance.ResetCustomer(mistake);
     }
 
     private void SellAndGetMoney(float per, int ItemCode)
@@ -139,7 +147,7 @@ public class CounterManager : SingleTon<CounterManager>
         {
             if (ItemSellDatas[ItemCode] == DM.ItemType[i])
             {
-                int plus = (int)(DM.ItemPrice[i] * per * (float)(DM.BonusPer[3,DM.InteriorLevel[3] - 1] / 100));
+                int plus = (int)(DM.ItemPrice[i] * per * DM.BonusPer[3,DM.InteriorLevel[3] - 1] / 100);
 
                 DM.HaveMoney += (int)(DM.ItemPrice[i] * per) + plus;
                 Debug.Log($"+{(int)(DM.ItemPrice[i] * per)}(+{plus}) 만큼 골드를 획득하셨습니다.");
@@ -193,13 +201,12 @@ public class CounterManager : SingleTon<CounterManager>
         {
             Debug.Log("아이템 판매가 성공 하셨습니다.");
 
-            DM.MoneySound.Play();
+            AudioManager.Instance.audiosource[3].Play();
 
             JudgeSell_Items();
             StopAllCoroutines();
             MonitorReset();
             CustomerManager.Instance.CanSell = false;
-            CustomerManager.Instance.ResetCustomer();
         }
     }
 

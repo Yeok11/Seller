@@ -83,6 +83,8 @@ public class TimeManager : SingleTon<TimeManager>
         DayUpdateScene.gameObject.SetActive(true);
         StartCoroutine("NewDayMes");
 
+        SubSystemManager.Instance.CanUseBt = true;
+
         transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = DM.Weeks[DM.Days % 7] + "¿äÀÏ";
         transform.GetChild(1).GetComponent<TextMeshProUGUI>().text = DM.Days + "ÀÏ";
 
@@ -97,7 +99,7 @@ public class TimeManager : SingleTon<TimeManager>
             Bgm.Stop();
             End.transform.GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>().text = "ÃÑ ÁöÃâ¾× : " + DM.UseGold[0];
             End.transform.GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().text = "ÃÑ ¸ÅÃâ¾× : " + DM.BuyGold[0];
-            End.transform.GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = "ÃÑ Â÷¾× : " + (DM.BuyGold[0] - DM.UseGold[0]);
+            End.transform.GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().text = "ÃÑ Â÷¾× : " + DataManager.Sign_PlusMinus(DM.BuyGold[0] - DM.UseGold[0]);
             End.transform.GetChild(1).GetChild(3).GetComponent<TextMeshProUGUI>().text = "ÃÑ ¼Õ´Ô ¹æ¹® È½¼ö : " + DM.ComeCustomerCnt[0];
             End.transform.GetChild(1).GetChild(4).GetComponent<TextMeshProUGUI>().text = "½Ç¼ö È½¼ö : " + DM.MissCnt[0];
             End.transform.GetChild(1).GetChild(5).GetComponent<TextMeshProUGUI>().text = "ÃÑ ÆÇ¸Å È½¼ö : " + DM.SellCnt[0];
@@ -112,9 +114,6 @@ public class TimeManager : SingleTon<TimeManager>
             PlayerPrefs.SetInt("AllSell", PlayerPrefs.GetInt("AllSell") + DM.SellCnt[0]);
             if (PlayerPrefs.GetInt("Sell") < DM.SellCnt[0]) PlayerPrefs.SetInt("Sell", DM.SellCnt[0]);
             if (Title.BestGetMoney[(int)DataManager.GameDif] < DM.BuyGold[0]) Title.BestGetMoney[(int)DataManager.GameDif] = DM.BuyGold[0];
-
-
-
             return;
         }
 

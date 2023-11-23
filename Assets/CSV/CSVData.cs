@@ -8,4 +8,5 @@ public class CSVData
     public List<Dictionary<string, object>> CustomMessage;
     public List<Dictionary<string, object>> EasyCustomMessage;
     public List<Dictionary<string, object>> DayEvent;
+    public List<Dictionary<string, object>> achieve;
 }

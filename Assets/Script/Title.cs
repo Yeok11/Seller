@@ -1,27 +1,36 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
+using System.Collections.Generic;
 
 public class Title : MonoBehaviour
 {
     [SerializeField] private GameObject TitleMes;
-    [SerializeField] private GameObject Set;
 
+    [SerializeField] private GameObject Set;
     [SerializeField] private GameObject ChooseStage;
     [SerializeField] private GameObject Achieve;
     [SerializeField] private GameObject Option;
 
-    [SerializeField] private GameObject ChooseMod;
-    [SerializeField] private GameObject DiffMod;
-    [SerializeField] private GameObject EventMod;
+    private GameObject ChooseMod;
+    private GameObject DiffMod;
+    private GameObject EventMod;
+
+    [SerializeField] private Transform AchieveContants;
 
     [SerializeField] private GameObject BlackEffect;
 
-    [SerializeField] private Transform DataPos;
+    private Transform OptionData;
+
+    [SerializeField] private TextMeshProUGUI StageContants;
+    [SerializeField] private GameObject DiffSelector;
+
 
     int[] PlayCnt = { 0, 0, 0};
     static internal int[] BestScore = { 0,0,0 };
     static internal int[] BestGetMoney = { 0,0,0 };
+
+    internal List<string> achieveType = new List<string>();
 
     bool SetOn = false;
 
@@ -32,7 +41,37 @@ public class Title : MonoBehaviour
 
     private void Start()
     {
+        for (int i = 0; i < CSVManager.Instance.csvdata.achieve.Count; i++)
+        {
+            achieveType.Add(CSVManager.Instance.csvdata.achieve[i]["이름"].ToString());
+            Debug.Log(achieveType[i]);
+        }
+
+        Transform Mod = ChooseStage.transform.GetChild(0);
+        OptionData = Option.transform.GetChild(0);
+
         DataSave();
+        ChooseMod = Mod.GetChild(0).gameObject;
+        DiffMod = Mod.GetChild(1).gameObject;
+        EventMod = Mod.GetChild(2).gameObject;
+
+        AchieveDataInput();
+    }
+
+    void AchieveDataInput()
+    {
+        for (int i = 0; i < AchieveContants.childCount; i++)
+        {
+            try
+            {
+                AchieveContants.GetChild(i).GetChild(1).GetComponent<TextMeshProUGUI>().SetText(achieveType[i] + "");
+            }
+            catch
+            {
+                break;
+            }
+        }
+        
         
     }
 
@@ -102,34 +141,42 @@ public class Title : MonoBehaviour
         }
 
 
-        DataPos.GetChild(0).GetComponent<TextMeshProUGUI>().SetText("총 장사 횟수 : " + (PlayCnt[0]+PlayCnt[1]+PlayCnt[2]));
-        DataPos.GetChild(1).GetComponent<TextMeshProUGUI>().SetText("장사꾼 장사 수 : " + PlayCnt[0]);
-        DataPos.GetChild(2).GetComponent<TextMeshProUGUI>().SetText("장사꾼 최고 점수 : " + BestScore[0]);
-        DataPos.GetChild(3).GetComponent<TextMeshProUGUI>().SetText("상인 장사 수 : " + PlayCnt[1]);
-        DataPos.GetChild(4).GetComponent<TextMeshProUGUI>().SetText("상인 최고 점수 : " + BestScore[1]);
-        DataPos.GetChild(5).GetComponent<TextMeshProUGUI>().SetText("대상인 장사 수 : " + PlayCnt[2]);
-        DataPos.GetChild(6).GetComponent<TextMeshProUGUI>().SetText("대상인 최고 점수 : " + BestScore[2]);
-        DataPos.GetChild(8).GetComponent<TextMeshProUGUI>().SetText("총 매출액 : " + (BestGetMoney[0] + BestGetMoney[1] + BestGetMoney[2]));
-        DataPos.GetChild(9).GetComponent<TextMeshProUGUI>().SetText("장사꾼 최대 매출액 : " + BestGetMoney[0]);
-        DataPos.GetChild(10).GetComponent<TextMeshProUGUI>().SetText("상인 최대 매출액 : " + BestGetMoney[1]);
-        DataPos.GetChild(11).GetComponent<TextMeshProUGUI>().SetText("대상인 최대 매출액 : " + BestGetMoney[2]);
-        DataPos.GetChild(12).GetComponent<TextMeshProUGUI>().SetText("최대 보유금 : " + PlayerPrefs.GetInt("HaveMoney"));
-        DataPos.GetChild(14).GetComponent<TextMeshProUGUI>().SetText("총 만족도 : " + PlayerPrefs.GetFloat("Satisfy") + "%");
-        DataPos.GetChild(14).GetChild(0).GetComponent<TextMeshProUGUI>().SetText("총 손님 수 : " + PlayerPrefs.GetInt("Customer"));
-        DataPos.GetChild(15).GetComponent<TextMeshProUGUI>().SetText("총 실수 횟수 : " + PlayerPrefs.GetInt("AllMiss"));
-        DataPos.GetChild(15).GetChild(0).GetComponent<TextMeshProUGUI>().SetText("최대 실수 횟수 : " + PlayerPrefs.GetInt("Miss"));
-        DataPos.GetChild(16).GetComponent<TextMeshProUGUI>().SetText("총 매입 횟수 : " + PlayerPrefs.GetInt("AllBuy"));
-        DataPos.GetChild(16).GetChild(0).GetComponent<TextMeshProUGUI>().SetText("최대 매입 수 : " + PlayerPrefs.GetInt("Buy"));
-        DataPos.GetChild(17).GetComponent<TextMeshProUGUI>().SetText("총 판매 수 : " + PlayerPrefs.GetInt("AllSell"));
-        DataPos.GetChild(17).GetChild(0).GetComponent<TextMeshProUGUI>().SetText("최대 판매 수 : " + PlayerPrefs.GetInt("Sell"));
+        OptionData.GetChild(0).GetComponent<TextMeshProUGUI>().SetText("총 장사 횟수 : " + (PlayCnt[0]+PlayCnt[1]+PlayCnt[2]));
+        OptionData.GetChild(1).GetComponent<TextMeshProUGUI>().SetText("장사꾼 장사 수 : " + PlayCnt[0]);
+        OptionData.GetChild(2).GetComponent<TextMeshProUGUI>().SetText("장사꾼 최고 점수 : " + BestScore[0]);
+        OptionData.GetChild(3).GetComponent<TextMeshProUGUI>().SetText("상인 장사 수 : " + PlayCnt[1]);
+        OptionData.GetChild(4).GetComponent<TextMeshProUGUI>().SetText("상인 최고 점수 : " + BestScore[1]);
+        OptionData.GetChild(5).GetComponent<TextMeshProUGUI>().SetText("대상인 장사 수 : " + PlayCnt[2]);
+        OptionData.GetChild(6).GetComponent<TextMeshProUGUI>().SetText("대상인 최고 점수 : " + BestScore[2]);
+        OptionData.GetChild(8).GetComponent<TextMeshProUGUI>().SetText("총 매출액 : " + (BestGetMoney[0] + BestGetMoney[1] + BestGetMoney[2]));
+        OptionData.GetChild(9).GetComponent<TextMeshProUGUI>().SetText("장사꾼 최대 매출액 : " + BestGetMoney[0]);
+        OptionData.GetChild(10).GetComponent<TextMeshProUGUI>().SetText("상인 최대 매출액 : " + BestGetMoney[1]);
+        OptionData.GetChild(11).GetComponent<TextMeshProUGUI>().SetText("대상인 최대 매출액 : " + BestGetMoney[2]);
+        OptionData.GetChild(12).GetComponent<TextMeshProUGUI>().SetText("최대 보유금 : " + PlayerPrefs.GetInt("HaveMoney"));
+        OptionData.GetChild(14).GetComponent<TextMeshProUGUI>().SetText("총 만족도 : " + PlayerPrefs.GetFloat("Satisfy") + "%");
+        OptionData.GetChild(14).GetChild(0).GetComponent<TextMeshProUGUI>().SetText("총 손님 수 : " + PlayerPrefs.GetInt("Customer"));
+        OptionData.GetChild(15).GetComponent<TextMeshProUGUI>().SetText("총 실수 횟수 : " + PlayerPrefs.GetInt("AllMiss"));
+        OptionData.GetChild(15).GetChild(0).GetComponent<TextMeshProUGUI>().SetText("최대 실수 횟수 : " + PlayerPrefs.GetInt("Miss"));
+        OptionData.GetChild(16).GetComponent<TextMeshProUGUI>().SetText("총 매입 횟수 : " + PlayerPrefs.GetInt("AllBuy"));
+        OptionData.GetChild(16).GetChild(0).GetComponent<TextMeshProUGUI>().SetText("최대 매입 수 : " + PlayerPrefs.GetInt("Buy"));
+        OptionData.GetChild(17).GetComponent<TextMeshProUGUI>().SetText("총 판매 수 : " + PlayerPrefs.GetInt("AllSell"));
+        OptionData.GetChild(17).GetChild(0).GetComponent<TextMeshProUGUI>().SetText("최대 판매 수 : " + PlayerPrefs.GetInt("Sell"));
     }
 
     private void Update()
     {
         if ((Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(1)) && TitleMes.activeSelf == false)
         {
-            if (Option.activeSelf == true) Option.SetActive(false);
-            else if (Achieve.activeSelf == true) Achieve.SetActive(false);
+            if (Option.activeSelf == true)
+            {
+                Option.SetActive(false);
+                GetComponent<AudioSource>().Play();
+            }
+            else if (Achieve.activeSelf == true)
+            {
+                Achieve.SetActive(false);
+                GetComponent<AudioSource>().Play();
+            }
             else
             {
                 if (SetOn == true)
@@ -142,6 +189,8 @@ public class Title : MonoBehaviour
                     }
                     else
                     {
+                        DiffSelector.SetActive(false);
+                        StageContants.SetText("난이도를 선택하세요.");
                         DiffMod.SetActive(false);
                         EventMod.SetActive(false);
                         StageSet();
@@ -152,6 +201,7 @@ public class Title : MonoBehaviour
                     Set.SetActive(false);
                     BlackEffect.SetActive(false);
                     TitleMes.SetActive(true);
+                    GetComponent<AudioSource>().Play();
                 }
             }
         }
@@ -161,6 +211,7 @@ public class Title : MonoBehaviour
     {
         Achieve.SetActive(true);
         TitleMes.SetActive(false);
+        GetComponent<AudioSource>().Play();
     }
 
     public void OptionSet()
@@ -168,6 +219,7 @@ public class Title : MonoBehaviour
         Option.SetActive(true);
         TitleMes.SetActive(false);
         BlackEffect.SetActive(true);
+        GetComponent<AudioSource>().Play();
     }
 
     public void StageSet()
@@ -177,18 +229,21 @@ public class Title : MonoBehaviour
         Set.SetActive(false);
         BlackEffect.SetActive(false);
         SetOn = true;
+        GetComponent<AudioSource>().Play();
     }
 
     public void DiffSet()
     {
         ChooseMod.SetActive(false);
         DiffMod.SetActive(true);
+        GetComponent<AudioSource>().Play();
     }
 
     public void EventSet()
     {
         ChooseMod.SetActive(false);
         EventMod.SetActive(true);
+        GetComponent<AudioSource>().Play();
     }
 
     public void ChooseSet()
@@ -196,10 +251,19 @@ public class Title : MonoBehaviour
         Set.SetActive(true);
         BlackEffect.SetActive(true);
         TitleMes.SetActive(false);
+        GetComponent<AudioSource>().Play();
+    }
+
+    public void DiffChoose()
+    {
+        if ((int)DataManager.GameDif < 3) PlayCnt[(int)DataManager.GameDif]++;
+        DataSave();
+        SceneManager.LoadScene("Ingame");
     }
 
     public void InGameStart(string _dif)
     {
+        GetComponent<AudioSource>().Play();
         switch (_dif)
         {
             case "Easy":
@@ -215,8 +279,12 @@ public class Title : MonoBehaviour
                 DataManager.GameDif = Diff.Event_1;
                 break;
         }
-        
-        SceneManager.LoadScene(0);
+
+        if (DiffSelector.activeSelf == false) DiffSelector.SetActive(true);
+        DiffSelector.transform.SetParent(DiffMod.transform.GetChild((int)DataManager.GameDif + 1));
+        DiffSelector.transform.position = DiffSelector.transform.parent.position;
+
+        StageContants.SetText("근무 일 : " + ((int)DataManager.GameDif < 3 ? 50 : 30) + "\n아이템 갯수 : 존재" + "\n난이도 : " + DataManager.GameDif + "\n매입 감소가 : " + SubSystemManager.Instance.SalePer() + "%");
     }
 
     static public void SizeCtrl()
