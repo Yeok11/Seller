@@ -68,9 +68,12 @@ public class CustomerManager : SingleTon<CustomerManager>
         //±ÍÁ·
         if (DataManager.Instance.Days >= 40) CustomerType = Random.Range(1, 21);
 
+        BACK:
+
         switch (CustomerType)
         {
             case <= 8:
+                if (TimeManager.Instance.WeekEventBoolTrigger[1]) goto BACK;
                 return CustomerType = 0;
             case <= 11:
                 return CustomerType = 1;
@@ -81,6 +84,7 @@ public class CustomerManager : SingleTon<CustomerManager>
             case <= 19:
                 return CustomerType = 4;
             case <= 20:
+                if (TimeManager.Instance.WeekEventBoolTrigger[1]) goto BACK;
                 return CustomerType = 5;
 
             //¿¹¿Ü
@@ -229,7 +233,15 @@ public class CustomerManager : SingleTon<CustomerManager>
                     break;
 
                 case Diff.Hard:
-                    TextContents = DataManager.Instance.NormalMessage[CustomerType, textContents[i]];
+                    if (Random.Range(0, 100) < 60 + DataManager.Instance.Days)
+                        TextContents = DataManager.Instance.NormalMessage[CustomerType, textContents[i]];
+                    else TextContents = DataManager.Instance.EasyMessage[CustomerType, textContents[i]];
+                    break;
+
+                case Diff.Event_1:
+                    if (Random.Range(0, 100) < 20)
+                        TextContents = DataManager.Instance.NormalMessage[CustomerType, textContents[i]];
+                    else TextContents = DataManager.Instance.EasyMessage[CustomerType, textContents[i]];
                     break;
             }
 

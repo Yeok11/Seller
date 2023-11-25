@@ -42,8 +42,7 @@ public class MarketSlot : SingleTon<MarketSlot>, IPointerDownHandler
 
     public void TextUpdate()
     {
-        int price = Mathf.RoundToInt(DataManager.Instance.ItemPrice[PosNum] -
-                (DataManager.Instance.ItemPrice[PosNum] * DataManager.Instance.BonusPer[DataManager.Instance.InteriorLevel[2], 2] / 100) - (int)(DataManager.Instance.ItemPrice[PosNum] * SubSystemManager.Instance.PrimarySale));
+        int price = Mathf.RoundToInt(DataManager.Instance.ItemPrice[PosNum] - (DataManager.Instance.ItemPrice[PosNum] * DataManager.Instance.BonusPer[2, DataManager.Instance.InteriorLevel[2] - 1] / 100) - Mathf.RoundToInt(DataManager.Instance.ItemPrice[PosNum] * SubSystemManager.Instance.PrimarySale));
 
         price = Mathf.RoundToInt(price / 10) * 10;
 

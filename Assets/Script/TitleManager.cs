@@ -2,8 +2,10 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 using System.Collections.Generic;
+using UnityEngine.UI;
+using EasyJson;
 
-public class Title : MonoBehaviour
+public class TitleManager : MonoBehaviour
 {
     [SerializeField] private GameObject TitleMes;
 
@@ -19,11 +21,15 @@ public class Title : MonoBehaviour
     [SerializeField] private Transform AchieveContants;
 
     [SerializeField] private GameObject BlackEffect;
+    [SerializeField] private GameObject ContinueCheck;
 
     private Transform OptionData;
 
     [SerializeField] private TextMeshProUGUI StageContants;
+    [SerializeField] private TextMeshProUGUI EventContants;
     [SerializeField] private GameObject DiffSelector;
+
+    static public bool ContinueData;
 
 
     int[] PlayCnt = { 0, 0, 0};
@@ -37,6 +43,7 @@ public class Title : MonoBehaviour
     private void Awake()
     {
         SizeCtrl();
+        if (EasyToJson.FromJson<GamePlayData>("RecordPlay").M_Day != 0) ContinueData = true;
     }
 
     private void Start()
@@ -44,13 +51,13 @@ public class Title : MonoBehaviour
         for (int i = 0; i < CSVManager.Instance.csvdata.achieve.Count; i++)
         {
             achieveType.Add(CSVManager.Instance.csvdata.achieve[i]["이름"].ToString());
-            Debug.Log(achieveType[i]);
+            //Debug.Log(achieveType[i]);
         }
 
         Transform Mod = ChooseStage.transform.GetChild(0);
         OptionData = Option.transform.GetChild(0);
 
-        DataSave();
+        DataLoad();
         ChooseMod = Mod.GetChild(0).gameObject;
         DiffMod = Mod.GetChild(1).gameObject;
         EventMod = Mod.GetChild(2).gameObject;
@@ -71,8 +78,6 @@ public class Title : MonoBehaviour
                 break;
             }
         }
-        
-        
     }
 
     private void DataSave()
@@ -167,49 +172,76 @@ public class Title : MonoBehaviour
     {
         if ((Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(1)) && TitleMes.activeSelf == false)
         {
-            if (Option.activeSelf == true)
+            if (ContinueCheck.activeSelf)
             {
-                Option.SetActive(false);
-                GetComponent<AudioSource>().Play();
-            }
-            else if (Achieve.activeSelf == true)
-            {
-                Achieve.SetActive(false);
-                GetComponent<AudioSource>().Play();
+                ContinueCheck.SetActive(false);
             }
             else
             {
-                if (SetOn == true)
+                if (Option.activeSelf == true)
                 {
-                    SetOn = false;
-                    if (ChooseMod.activeSelf == true)
-                    {
-                        ChooseStage.SetActive(false);
-                        ChooseSet();
-                    }
-                    else
-                    {
-                        DiffSelector.SetActive(false);
-                        StageContants.SetText("난이도를 선택하세요.");
-                        DiffMod.SetActive(false);
-                        EventMod.SetActive(false);
-                        StageSet();
-                    }
+                    Option.SetActive(false);
+                    GetComponent<AudioSource>().Play();
+                }
+                else if (Achieve.activeSelf == true)
+                {
+                    Achieve.SetActive(false);
+                    GetComponent<AudioSource>().Play();
                 }
                 else
                 {
-                    Set.SetActive(false);
-                    BlackEffect.SetActive(false);
-                    TitleMes.SetActive(true);
-                    GetComponent<AudioSource>().Play();
+                    if (SetOn == true)
+                    {
+                        SetOn = false;
+                        if (ChooseMod.activeSelf == true)
+                        {
+                            ChooseStage.SetActive(false);
+                            ChooseSet();
+                        }
+                        else
+                        {
+                            DiffSelector.SetActive(false);
+                            StageContants.SetText("난이도를 선택하세요.");
+                            DiffMod.SetActive(false);
+                            EventMod.SetActive(false);
+                            StageSet();
+                        }
+                    }
+                    else
+                    {
+                        Set.SetActive(false);
+                        BlackEffect.SetActive(false);
+                        TitleMes.SetActive(true);
+                        GetComponent<AudioSource>().Play();
+                    }
                 }
             }
         }
     }
 
+    public void ContinueGame()
+    {
+        if (DataManager.GameDif== Diff.Event_1)
+        {
+            SceneManager.LoadScene("Ingame Event");
+        }
+        else
+        {
+            SceneManager.LoadScene("Ingame");
+        }
+        
+    }
+    public void NewGame()
+    {
+        SubSystemManager.Instance.DataReset();
+        ContinueCheck.SetActive(false);
+        StageSet();
+    }
+
     public void AchieveSet()
     {
         Achieve.SetActive(true);
+        Achieve.transform.GetChild(0).GetComponentInChildren<Scrollbar>().value = 1;
         TitleMes.SetActive(false);
         GetComponent<AudioSource>().Play();
     }
@@ -224,11 +256,33 @@ public class Title : MonoBehaviour
 
     public void StageSet()
     {
-        ChooseMod.SetActive(true);
-        ChooseStage.SetActive(true);
-        Set.SetActive(false);
-        BlackEffect.SetActive(false);
-        SetOn = true;
+        int days;
+
+        try
+        {
+            days = EasyToJson.FromJson<GamePlayData>("RecordPlay").M_Day;
+            DataManager.GameDif = EasyToJson.FromJson<GamePlayData>("RecordPlay").diff;
+        }
+        catch
+        {
+            days = 0;
+        }
+        
+
+        if (ContinueData)
+        {
+            ContinueCheck.SetActive(true);
+            ContinueCheck.transform.GetChild(0).GetComponent<TextMeshProUGUI>().SetText($"기존 데이터가 존재합니다. 이어하시겠습니까?\n" +
+                $"난이도 -{DataManager.GameDif}- / {days}일차");
+        }
+        else
+        {
+            ChooseMod.SetActive(true);
+            ChooseStage.SetActive(true);
+            Set.SetActive(false);
+            BlackEffect.SetActive(false);
+            SetOn = true;
+        }
         GetComponent<AudioSource>().Play();
     }
 
@@ -258,7 +312,14 @@ public class Title : MonoBehaviour
     {
         if ((int)DataManager.GameDif < 3) PlayCnt[(int)DataManager.GameDif]++;
         DataSave();
-        SceneManager.LoadScene("Ingame");
+        if (DataManager.GameDif == Diff.Event_1)
+        {
+            SceneManager.LoadScene("Ingame Event");
+        }
+        else
+        {
+            SceneManager.LoadScene("Ingame");
+        }
     }
 
     public void InGameStart(string _dif)
@@ -278,13 +339,29 @@ public class Title : MonoBehaviour
             case "Event1":
                 DataManager.GameDif = Diff.Event_1;
                 break;
+            case "Tutorial":
+                DataManager.GameDif = Diff.Tutorial;
+                DiffChoose();
+                return;
         }
 
         if (DiffSelector.activeSelf == false) DiffSelector.SetActive(true);
-        DiffSelector.transform.SetParent(DiffMod.transform.GetChild((int)DataManager.GameDif + 1));
+
+
+        if (DiffMod.activeSelf == true)
+        {
+            DiffSelector.transform.SetParent(DiffMod.transform.GetChild((int)DataManager.GameDif + 1));
+            StageContants.SetText("근무 일 : " + ((int)DataManager.GameDif < 3 ? 50 : 30) + "\n아이템 갯수 : 존재" + "\n난이도 : " + DataManager.GameDif + "\n매입 감소가 : " + SubSystemManager.Instance.SalePer() + "%");
+        }
+        else if (EventMod.activeSelf)
+        {
+            DiffSelector.transform.SetParent(EventMod.transform.GetChild((int)DataManager.GameDif % 10 + 1));
+            EventContants.SetText("근무 일 : " + ((int)DataManager.GameDif < 3 ? 50 : 30) + "\n아이템 갯수 : 없음" + "\n난이도 : " + (DataManager.GameDif == Diff.Event_1 ? "넘치는 물품" : "null") + "\n매입 감소가 : " + SubSystemManager.Instance.SalePer() + "%");
+        }
+
         DiffSelector.transform.position = DiffSelector.transform.parent.position;
 
-        StageContants.SetText("근무 일 : " + ((int)DataManager.GameDif < 3 ? 50 : 30) + "\n아이템 갯수 : 존재" + "\n난이도 : " + DataManager.GameDif + "\n매입 감소가 : " + SubSystemManager.Instance.SalePer() + "%");
+        
     }
 
     static public void SizeCtrl()
@@ -306,5 +383,10 @@ public class Title : MonoBehaviour
             float newHeight = ((float)deviceWidth / deviceHeight) / ((float)setWidth / setHeight); // 새로운 높이
             Camera.main.rect = new Rect(0f, (1f - newHeight) / 2f, 1f, newHeight); // 새로운 Rect 적용
         }
+    }
+
+    public void GameOff()
+    {
+        Application.Quit();
     }
 }

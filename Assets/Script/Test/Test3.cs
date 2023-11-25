@@ -6,6 +6,7 @@ using System;
 public class Test3 : MonoBehaviour
 {
     Action testAction;
+    Action<int> testAction2;
 
     public void _TestAction()
     {
@@ -19,6 +20,7 @@ public class Test3 : MonoBehaviour
 
     private void Start()
     {
+        /*
         testAction += _TestAction;
         testAction += _TestAction;
         testAction += () => _TestAction2(2);
@@ -27,9 +29,15 @@ public class Test3 : MonoBehaviour
 
         testAction += _TestAction;
         testAction -= _TestAction;
+        testAction -= _TestAction;
+        testAction -= _TestAction;
         testAction += () => _TestAction2(2);
         testAction += () => _TestAction2(2);
         
         testAction();
+        */
+        //testAction2(3);
+        testAction2 = (int a) => Debug.Log(testAction2); ;
+        Debug.Log("³¡");
     }
 }

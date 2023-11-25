@@ -12,7 +12,7 @@ public class AudioManager : SingleTon<AudioManager>
 
     public AudioMixer mixer;
 
-    static bool SliderValueSet = false;
+    //static bool SliderValueSet = false;
 
     static float[] SliderValue = { -20, -15, -15 };
 
@@ -46,7 +46,15 @@ public class AudioManager : SingleTon<AudioManager>
                 else mixer.SetFloat("Effect", SliderValue[num]);
                 break;
         }
-        Sounds[num].transform.GetChild(2).GetComponent<TextMeshProUGUI>().SetText(Mathf.RoundToInt((SliderValue[num] + 40) / (num == 0 ? 40 : 50) * 100) + "%");
+        try
+        {
+            Sounds[num].transform.GetChild(2).GetComponent<TextMeshProUGUI>().SetText(Mathf.RoundToInt((SliderValue[num] + 40) / (num == 0 ? 40 : 50) * 100) + "%");
+        }
+        catch
+        {
+            Sounds[num].transform.GetChild(1).GetComponent<TextMeshProUGUI>().SetText(Mathf.RoundToInt((SliderValue[num] + 40) / (num == 0 ? 40 : 50) * 100) + "%");
+        }
+        
     }
 
     public void SoundOnOff()

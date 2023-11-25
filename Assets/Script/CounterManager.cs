@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using System.Linq;
+using System;
 
 [HideInInspector]
 public class CounterManager : SingleTon<CounterManager>
@@ -11,7 +12,9 @@ public class CounterManager : SingleTon<CounterManager>
     private Transform SellPos;
 
     private GameObject[] Slot = new GameObject[15];
-   
+
+    //internal int WeekSellBonus;
+
 
     [SerializeField] private TextMeshProUGUI SellData;
     [SerializeField] private TextMeshProUGUI TotalSign;
@@ -96,14 +99,15 @@ public class CounterManager : SingleTon<CounterManager>
         if (ItemSellDatas.Count() == 0) mistake = true;
 
     ReSet:
-        for (int j = 0; j < DM.CustomerOrderData.Count; j++)
+        for (int j = 0; j < DM.CustomerOrderData.Count;j++)
         {
             if (ItemSellDatas.Count() == 0 || DM.CustomerOrderData.Count() == 0)
             {
                 break;
             }
 
-            //Debug.Log("판매 물건 : " + ItemSellDatas[i] + " / 손님이 주문한 물건" + DM.CustomerOrderData[j]);
+            Debug.Log(i + " / " + j);
+            Debug.Log("판매 물건 : " + ItemSellDatas[i] + " / 손님이 주문한 물건" + DM.CustomerOrderData[j]);
 
             if (ItemSellDatas[i] == DM.CustomerOrderData[j])
             {
@@ -122,6 +126,7 @@ public class CounterManager : SingleTon<CounterManager>
                 DM.SellCnt[2]++;
                 ItemSellDatas.RemoveAt(i);
                 DM.CustomerOrderData.RemoveAt(j);
+                j = 0;
 
                 goto ReSet;
             }
@@ -130,11 +135,13 @@ public class CounterManager : SingleTon<CounterManager>
 
         //if (mistake) DM.MissCnt[2]++;
 
+    /*
         if (i < AG - i)
         {
             i++;
             goto ReSet;
         }
+    */
 
         ItemSellDatas.Clear();
         DM.CustomerOrderData.Clear();
@@ -148,8 +155,12 @@ public class CounterManager : SingleTon<CounterManager>
             if (ItemSellDatas[ItemCode] == DM.ItemType[i])
             {
                 int plus = (int)(DM.ItemPrice[i] * per * DM.BonusPer[3,DM.InteriorLevel[3] - 1] / 100);
+                int totalSellCost = (int)(DM.ItemPrice[i] * per) + plus;
+                totalSellCost += TimeManager.Instance.WeekBonusValue[0] == 0 ? 0 : totalSellCost/TimeManager.Instance.WeekBonusValue[0];
+                //WeekSellBonus = (int a) => totalSellCost += (totalSellCost / a);
 
-                DM.HaveMoney += (int)(DM.ItemPrice[i] * per) + plus;
+                //WeekBonu(TimeManager.Instance.MoneyTrigger_Weekevent);
+                DM.HaveMoney += totalSellCost;
                 Debug.Log($"+{(int)(DM.ItemPrice[i] * per)}(+{plus}) 만큼 골드를 획득하셨습니다.");
                 DM.BuyGold[2] += (int)(DM.ItemPrice[i] * per) + plus;
                 break;
@@ -172,7 +183,7 @@ public class CounterManager : SingleTon<CounterManager>
         ShelfReset();
     }
 
-    private void ShelfReset()
+    internal void ShelfReset()
     {
         for (int i = 0; i < Slot.Length; i++)
         {
@@ -200,6 +211,9 @@ public class CounterManager : SingleTon<CounterManager>
         if (CustomerManager.Instance.OrderNowDo == false && CustomerManager.Instance.CanSell == true)
         {
             Debug.Log("아이템 판매가 성공 하셨습니다.");
+
+            if (DataManager.GameDif == Diff.Event_1) for (int i = 0; i < DM.ItemCount.Length; i++) DM.ItemCount[i] = 99;
+
 
             AudioManager.Instance.audiosource[3].Play();
 

@@ -6609,7 +6609,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aaa95e216d41f314dad483fe4d0edd0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ItemCount: 
   HaveMoney: 999999
   MoneyPos: {fileID: 1237231598}
   MarketBtsPos: {fileID: 269937347}
@@ -10216,8 +10215,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_text: "\uD0C0\uC774\uD2C0\uB85C \uB098\uAC00\uC9C0 \uC54A\uC73C\uBA74\n\uAE30\uB85D\uC774
-    \uB0A8\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.\n\uD50C\uB808\uC774\uB97C \uC774\uC5B4\uD558\uC2E4
-    \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
+    \uB0A8\uC9C0 \uC54A\uC2B5\uB2C8\uB2E4.\n\uD604\uC7AC \uD50C\uB808\uC774\uB97C
+    \uC774\uC5B4\uD558\uC2E4 \uC218 \uC5C6\uC2B5\uB2C8\uB2E4."
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1db4778430a149040be78bff12f078d7, type: 2}
   m_sharedMaterial: {fileID: -9210562860401445910, guid: 1db4778430a149040be78bff12f078d7, type: 2}

@@ -23,14 +23,18 @@ public class WeekReport : MonoBehaviour
 
     public void OpenReport()
     {
-        transform.GetChild(0).gameObject.SetActive(false);
+        if (DataManager.GameDif != Diff.Event_1) transform.GetChild(0).gameObject.SetActive(false);
         transform.GetChild(1).gameObject.SetActive(true);
 
-        InputWeekData();
+        if (DataManager.GameDif != Diff.Event_1)
+        {
+            InputWeekData();
+        }
     }
 
     public void Sign()
     {
+        
         transform.GetChild(1).gameObject.SetActive(false);
         OpenSystem.Check_WeekList = true;
     }

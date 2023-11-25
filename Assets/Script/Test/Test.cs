@@ -1,41 +1,32 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using EasyJson;
+
 
 public class Test : MonoBehaviour
 {
+    
+
+    [SerializeField] testclass testor1 = new testclass();
     private void Start()
     {
-        StartCoroutine(tester());
+        EasyToJson.ToJson(testor1,"_test01", true);
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.C))
+        if (Input.GetKeyDown(KeyCode.A))
         {
-            StopCoroutine("tester");
-            Debug.Log("ÄÆ");
-        }
-        if (Input.GetKeyDown(KeyCode.D))
-        {
-            StartCoroutine(tester());
-            Debug.Log("Àç½ÃÀÛ");
-        }
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            StopAllCoroutines();
-            Debug.Log("¸ðµÎ ÄÆ");
+            testor1 = EasyToJson.FromJson<testclass>("_test01");
+            Debug.Log(testor1.a);
+            testor1.a = 20;
+            EasyToJson.ToJson(testor1, "_test01", true);
         }
     }
-
-    IEnumerator tester()
-    {
-        int i = 1;
-        while (true)
-        {
-            yield return new WaitForSeconds(1);
-            Debug.Log(i + "ÃÊ");
-            i++;
-        }
-    }
+}
+[System.Serializable]
+class testclass
+{
+    public int a = 0;
 }
