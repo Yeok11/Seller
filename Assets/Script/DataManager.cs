@@ -37,7 +37,7 @@ public class DataManager : SingleTon<DataManager>
     [SerializeField] TextMeshProUGUI MoneyPos;
 
 #region 시간 설정
-    internal int Days = 0;
+    internal int Days = 42;
     internal int MaxDay;
     internal List<string> Weeks = new List<string>();
 
@@ -77,7 +77,7 @@ public class DataManager : SingleTon<DataManager>
 
     internal List<int> BuyGold = new List<int>(3) { 0, 0, 0 };
 
-    internal int BuyCnt;
+    internal int BuyCnt = 0;
     internal List<int> SellCnt = new List<int>(3) { 0, 0, 0 };
     internal List<int> ComeCustomerCnt = new List<int>(3) { 0, 0, 0 };
     internal List<int> MissCnt = new List<int>(3) { 0, 0, 0 };

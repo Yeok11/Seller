@@ -25,6 +25,7 @@ public class CounterManager : SingleTon<CounterManager>
 
     private List<string> ItemSellDatas = new List<string>();
 
+    
     private void Start()
     {
         DM = DataManager.Instance;
@@ -72,7 +73,7 @@ public class CounterManager : SingleTon<CounterManager>
                 DM.ItemCount_Sell[CodeNum]++;
                 DM.ItemCount[CodeNum]--;
                 
-                SellDatas[NullDataPos].transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().text = DM.ItemCount_Sell[CodeNum].ToString();
+                SellDatas[NullDataPos].transform.GetChild(0).GetComponent<TextMeshProUGUI>().text = DM.ItemCount_Sell[CodeNum].ToString();
 
                 //총합 가격
                 DM.SellTotalMoney += DM.ItemPrice[CodeNum];
@@ -123,6 +124,7 @@ public class CounterManager : SingleTon<CounterManager>
                     mistake = true;
                 }
 
+
                 DM.SellCnt[2]++;
                 ItemSellDatas.RemoveAt(i);
                 DM.CustomerOrderData.RemoveAt(j);
@@ -161,7 +163,7 @@ public class CounterManager : SingleTon<CounterManager>
 
                 //WeekBonu(TimeManager.Instance.MoneyTrigger_Weekevent);
                 DM.HaveMoney += totalSellCost;
-                Debug.Log($"+{(int)(DM.ItemPrice[i] * per)}(+{plus}) 만큼 골드를 획득하셨습니다.");
+                //Debug.Log($"+{(int)(DM.ItemPrice[i] * per)}(+{plus}) 만큼 골드를 획득하셨습니다.");
                 DM.BuyGold[2] += (int)(DM.ItemPrice[i] * per) + plus;
                 break;
             }
@@ -200,7 +202,7 @@ public class CounterManager : SingleTon<CounterManager>
 
         ItemSellDatas.Clear();
 
-        Debug.Log("아이템 판매가 취소 되셨습니다.");
+        //Debug.Log("아이템 판매가 취소 되셨습니다.");
 
         ShelfReset();
         MonitorReset();
@@ -212,7 +214,11 @@ public class CounterManager : SingleTon<CounterManager>
         {
             Debug.Log("아이템 판매가 성공 하셨습니다.");
 
-            if (DataManager.GameDif == Diff.Event_1) for (int i = 0; i < DM.ItemCount.Length; i++) DM.ItemCount[i] = 99;
+            if (DataManager.GameDif == Diff.Event_1)
+            {
+                for (int i = 0; i < DM.ItemCount.Length; i++) DM.ItemCount[i] = 99;
+                ShelfReset();
+            }
 
 
             AudioManager.Instance.audiosource[3].Play();

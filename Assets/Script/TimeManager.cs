@@ -273,8 +273,63 @@ public class TimeManager : SingleTon<TimeManager>
         Im_Pos.GetChild(5).GetComponent<TextMeshProUGUI>().text = "총 판매 횟수 : " + DM.SellCnt[0];
         Im_Pos.GetChild(6).GetComponent<TextMeshProUGUI>().text = "최종 보유 금액 : " + DM.HaveMoney;
         End.transform.GetChild(2).GetComponent<TextMeshProUGUI>().SetText(ScoreSet().ToString());
+        End.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().SetText(ScoreSet().ToString());
+        
+        switch (ScoreSet())
+        {
+            case <= 300000:
+                End.transform.GetChild(0).GetComponent<TextMeshProUGUI>().SetText("E");
+                break;
 
-#region 기록
+            case < 500000:
+                End.transform.GetChild(0).GetComponent<TextMeshProUGUI>().SetText("D");
+                break;
+
+            case < 1100000:
+                End.transform.GetChild(0).GetComponent<TextMeshProUGUI>().SetText("C");
+                break;
+
+            case < 1800000:
+                End.transform.GetChild(0).GetComponent<TextMeshProUGUI>().SetText("B");
+                break;
+
+            case < 2500000:
+                End.transform.GetChild(0).GetComponent<TextMeshProUGUI>().SetText("A");
+                break;
+
+            case < 3000000:
+                End.transform.GetChild(0).GetComponent<TextMeshProUGUI>().SetText("s");
+                break;
+
+            case >= 3000000:
+                End.transform.GetChild(0).GetComponent<TextMeshProUGUI>().SetText("S");
+                break;
+        }
+        #region 기록
+        if (DataManager.GameDif == Diff.Easy || DataManager.GameDif == Diff.Hard || DataManager.GameDif == Diff.Normal)
+        {
+            string[] dataArr1 = PlayerPrefs.GetString("ScoreData").Split(',');
+            int[] Best = { 0, 0, 0 };
+
+            for (int i = 0; i < Best.Length; i++) Best[i] = System.Convert.ToInt32(dataArr1[i]);
+            if (Best[(int)DataManager.GameDif] < ScoreSet())
+            {
+                Best[(int)DataManager.GameDif] = ScoreSet();
+
+                string strArr1 = "";
+                for (int i = 0; i < Best.Length; i++)
+                {
+                    strArr1 = strArr1 + Best[i];
+
+                    if (i < Best.Length - 1)
+                    {
+                        strArr1 = strArr1 + ",";
+                    }
+                }
+
+                PlayerPrefs.SetString("ScoreData", strArr1);
+            }
+        }
         if (PlayerPrefs.GetInt("HaveMoney") < DM.HaveMoney) PlayerPrefs.SetInt("HaveMoney", DM.HaveMoney);
         PlayerPrefs.SetInt("Customer", PlayerPrefs.GetInt("Customer") + DM.ComeCustomerCnt[0]);
         PlayerPrefs.SetInt("AllMiss", PlayerPrefs.GetInt("AllMiss") + DM.MissCnt[0]);
@@ -289,7 +344,15 @@ public class TimeManager : SingleTon<TimeManager>
 
     private int ScoreSet()
     {
-        return DM.BuyGold[0] / 10 + DM.ComeCustomerCnt[0] * 100 + DM.SellCnt[0] * 100 - DM.MissCnt[0] * 500;
+        if (DataManager.GameDif == Diff.Event_1)
+        {
+            return DM.HaveMoney / 15 + DM.ComeCustomerCnt[2] * 100 + DM.SellCnt[2] * 100 - (DM.MissCnt[2] * 200);
+        }
+        else
+        {
+            return DM.BuyGold[0] / 10 + DM.ComeCustomerCnt[0] * 100 + DM.SellCnt[0] * 100 - DM.MissCnt[0] * 500;
+        }
+        
     }
 
     internal void HourTimer()
@@ -315,14 +378,43 @@ public class TimeManager : SingleTon<TimeManager>
                 End.SetActive(true);
                 DM.NowOpen = false;
 
-                End.transform.GetChild(0).GetComponent<TextMeshProUGUI>().SetText("");
-                End.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().SetText("");
+                End.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().SetText(ScoreSet().ToString());
+                switch (ScoreSet())
+                {
+                    case <= 300000:
+                        End.transform.GetChild(0).GetComponent<TextMeshProUGUI>().SetText("E");
+                        break;
+
+                    case < 500000:
+                        End.transform.GetChild(0).GetComponent<TextMeshProUGUI>().SetText("D");
+                        break;
+
+                    case < 1100000:
+                        End.transform.GetChild(0).GetComponent<TextMeshProUGUI>().SetText("C");
+                        break;
+
+                    case < 1800000:
+                        End.transform.GetChild(0).GetComponent<TextMeshProUGUI>().SetText("B");
+                        break;
+
+                    case < 2500000:
+                        End.transform.GetChild(0).GetComponent<TextMeshProUGUI>().SetText("A");
+                        break;
+
+                    case < 3000000:
+                        End.transform.GetChild(0).GetComponent<TextMeshProUGUI>().SetText("s");
+                        break;
+
+                    case >= 3000000:
+                        End.transform.GetChild(0).GetComponent<TextMeshProUGUI>().SetText("S");
+                        break;
+                }
                 End.transform.GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>().SetText("최종 매출액 : " + DM.HaveMoney);
                 End.transform.GetChild(1).GetChild(1).GetComponent<TextMeshProUGUI>().SetText("맞이한 손님 수 : " + DM.ComeCustomerCnt[2]);
                 End.transform.GetChild(1).GetChild(2).GetComponent<TextMeshProUGUI>().SetText("실수 횟수 : " + DM.MissCnt[2]);
                 End.transform.GetChild(1).GetChild(3).GetComponent<TextMeshProUGUI>().SetText("판매한 물품 갯수 : " + DM.SellCnt[2]);
-                End.transform.GetChild(1).GetChild(4).GetComponent<TextMeshProUGUI>().SetText("만족도 : " + (100 - DM.MissCnt[2] / DM.ComeCustomerCnt[2] * 100));
-                End.transform.GetChild(2).GetComponent<TextMeshProUGUI>().SetText("");
+                End.transform.GetChild(1).GetChild(4).GetComponent<TextMeshProUGUI>().SetText("만족도 : " + (100 - (DM.MissCnt[2] / DM.ComeCustomerCnt[2]) * 100));
+                End.transform.GetChild(2).GetComponent<TextMeshProUGUI>().SetText(ScoreSet().ToString());
             }
         }
     }

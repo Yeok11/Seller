@@ -14,7 +14,7 @@ public class AudioManager : SingleTon<AudioManager>
 
     //static bool SliderValueSet = false;
 
-    static float[] SliderValue = { -20, -15, -15 };
+    static float[] SliderValue = { -20, 10, 10 };
 
     private void Start()
     {

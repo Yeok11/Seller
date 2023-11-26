@@ -22,6 +22,7 @@ public class SubSystemManager : SingleTon<SubSystemManager>
     [SerializeField] private Transform MarketDataPos;
     [SerializeField] private GameObject MarketItemInfo;
 
+   
     //internal int WeekBuyBonus;
 
     internal float PrimarySale;
@@ -52,6 +53,7 @@ public class SubSystemManager : SingleTon<SubSystemManager>
     private void Start()
     {
         PrimarySale = SalePer();
+        
 
         if (TitleManager.ContinueData) DataLoad();
 
@@ -59,7 +61,7 @@ public class SubSystemManager : SingleTon<SubSystemManager>
         {
             BtList_Obj.SetActive(false);
 
-            if (true)
+            if (DataManager.GameDif == Diff.Event_1)
             {
                 for (int i = 0; i < DataManager.Instance.InteriorLevel.Length; i++)
                 {
@@ -118,7 +120,6 @@ public class SubSystemManager : SingleTon<SubSystemManager>
             if (BtType != 4) _BtList = BtList_Obj.transform.GetChild(BtType).GetChild(0).gameObject;
             else { _BtList = BtList_Obj; }
 
-
             if (_BtList.activeSelf == false) SubWindowOff(_BtList);
             else { _BtList.SetActive(false); }
             /*
@@ -154,7 +155,11 @@ public class SubSystemManager : SingleTon<SubSystemManager>
         
 
         if (OpenObject != null) OpenObject.SetActive(true);
-        if (OpenObject.name == "MarketWindow") MarketItemInfo.gameObject.SetActive(false);
+        if (OpenObject.name == "MarketWindow")
+        {
+            MarketItemInfo.gameObject.SetActive(false);
+            OpenObject.transform.GetChild(0).GetComponentInChildren<Scrollbar>().value = 1;
+        }
         if (OpenObject.name == "BagWindow") BagItemReset();
     }
 
@@ -187,7 +192,6 @@ public class SubSystemManager : SingleTon<SubSystemManager>
     {
         for (int i = 0; i < 4; i++)
         {
-            
             if (DataManager.Instance.InteriorLevel[i] < 5)
             {
                 InteriorLists.GetChild(i).GetChild(1).GetChild(0).GetComponent<TextMeshProUGUI>().text = "Lv." + DataManager.Instance.InteriorLevel[i];
@@ -216,14 +220,8 @@ public class SubSystemManager : SingleTon<SubSystemManager>
     }
     private int ScheduleJudge()
     {
-        if (DataManager.Instance.Days % 7 < 3)
-        {
-            return 3 - DataManager.Instance.Days % 7;
-        }
-        else
-        {
-            return 10 - DataManager.Instance.Days % 7;
-        }
+        if (DataManager.Instance.Days % 7 < 3) return 3 - DataManager.Instance.Days % 7;
+        else return 10 - DataManager.Instance.Days % 7;
     }
     public void MarketCntUp(bool Ctrl)
     {
@@ -258,6 +256,7 @@ public class SubSystemManager : SingleTon<SubSystemManager>
             {
                 if (DataManager.Instance.MarketItemCnt <= 0) break;
 
+                DataManager.Instance.BuyCnt++;
                 DataManager.Instance.MarketOrderData.Add(j);
                 DataManager.Instance.HaveMoney -= Sale;
                 DataManager.Instance.MarketItemCnt--;

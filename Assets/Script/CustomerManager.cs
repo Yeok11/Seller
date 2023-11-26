@@ -66,8 +66,7 @@ public class CustomerManager : SingleTon<CustomerManager>
         //성직자
         if (DataManager.Instance.Days >= 15) CustomerType = Random.Range(1, 20);
         //귀족
-        if (DataManager.Instance.Days >= 40) CustomerType = Random.Range(1, 21);
-
+        if (DataManager.Instance.Days >= 40 ||DataManager.GameDif == Diff.Event_1) CustomerType = Random.Range(1, 21);
         BACK:
 
         switch (CustomerType)
@@ -136,7 +135,7 @@ public class CustomerManager : SingleTon<CustomerManager>
         //이미 있는 지 확인하고 있다면 다시 설정
         for (int j = 0; j < AgainTime.Count; j++) if (RangeValue == AgainTime[j]) goto More;
 
-        Debug.Log("손님 종류는 : " + CustomerType);
+        //Debug.Log("손님 종류는 : " + CustomerType);
         // 수량 설정
         if (CustomerType < 5)
         {

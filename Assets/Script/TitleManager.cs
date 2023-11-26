@@ -67,11 +67,11 @@ public class TitleManager : MonoBehaviour
 
     void AchieveDataInput()
     {
-        for (int i = 0; i < AchieveContants.childCount; i++)
+        for (int i = 0; i < AchieveContants.GetChild(0).childCount; i++)
         {
             try
             {
-                AchieveContants.GetChild(i).GetChild(1).GetComponent<TextMeshProUGUI>().SetText(achieveType[i] + "");
+                AchieveContants.GetChild(0).GetChild(i).GetChild(1).GetComponent<TextMeshProUGUI>().SetText(achieveType[i] + "");
             }
             catch
             {
@@ -202,6 +202,7 @@ public class TitleManager : MonoBehaviour
                         {
                             DiffSelector.SetActive(false);
                             StageContants.SetText("난이도를 선택하세요.");
+                            EventContants.SetText("모드를 선택하세요.");
                             DiffMod.SetActive(false);
                             EventMod.SetActive(false);
                             StageSet();
@@ -221,10 +222,7 @@ public class TitleManager : MonoBehaviour
 
     public void ContinueGame()
     {
-        if (DataManager.GameDif== Diff.Event_1)
-        {
-            SceneManager.LoadScene("Ingame Event");
-        }
+        if (DataManager.GameDif== Diff.Event_1) SceneManager.LoadScene("Ingame Event");
         else
         {
             SceneManager.LoadScene("Ingame");
@@ -312,10 +310,8 @@ public class TitleManager : MonoBehaviour
     {
         if ((int)DataManager.GameDif < 3) PlayCnt[(int)DataManager.GameDif]++;
         DataSave();
-        if (DataManager.GameDif == Diff.Event_1)
-        {
-            SceneManager.LoadScene("Ingame Event");
-        }
+        if (DataManager.GameDif == Diff.Event_1) SceneManager.LoadScene("Ingame Event");
+        else if (DataManager.GameDif == Diff.Tutorial) SceneManager.LoadScene("Tutorial");
         else
         {
             SceneManager.LoadScene("Ingame");
@@ -343,6 +339,14 @@ public class TitleManager : MonoBehaviour
                 DataManager.GameDif = Diff.Tutorial;
                 DiffChoose();
                 return;
+
+            case "Event2":
+                DataManager.GameDif = Diff.Event_2;
+                break;
+
+            case "Event3":
+                DataManager.GameDif = Diff.Event_3;
+                break;
         }
 
         if (DiffSelector.activeSelf == false) DiffSelector.SetActive(true);
@@ -355,6 +359,11 @@ public class TitleManager : MonoBehaviour
         }
         else if (EventMod.activeSelf)
         {
+            if (DataManager.GameDif != Diff.Event_1)
+            {
+                EventContants.SetText("아직 모드가 완성되지 않았습니다. 다른 모드를 선택해주세요.");
+                return;
+            }
             DiffSelector.transform.SetParent(EventMod.transform.GetChild((int)DataManager.GameDif % 10 + 1));
             EventContants.SetText("근무 일 : " + ((int)DataManager.GameDif < 3 ? 50 : 30) + "\n아이템 갯수 : 없음" + "\n난이도 : " + (DataManager.GameDif == Diff.Event_1 ? "넘치는 물품" : "null") + "\n매입 감소가 : " + SubSystemManager.Instance.SalePer() + "%");
         }
