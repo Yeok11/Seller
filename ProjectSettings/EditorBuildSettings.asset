@@ -14,10 +14,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Ingame Event.unity
     guid: ed69905755d1f1f40a041929229648d7
-  - enabled: 0
-    path: Assets/Scenes/Test.unity
-    guid: 9015448fb0872434389ab525248c0c8f
   - enabled: 1
     path: Assets/Scenes/Tutorial.unity
     guid: 63d643f68f83e204f88456ba37985ea1
+  - enabled: 0
+    path: Assets/Scenes/Test.unity
+    guid: 9015448fb0872434389ab525248c0c8f
   m_configObjects: {}

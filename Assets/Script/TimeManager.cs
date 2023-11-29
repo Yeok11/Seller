@@ -346,11 +346,11 @@ public class TimeManager : SingleTon<TimeManager>
     {
         if (DataManager.GameDif == Diff.Event_1)
         {
-            return DM.HaveMoney / 15 + DM.ComeCustomerCnt[2] * 100 + DM.SellCnt[2] * 100 - (DM.MissCnt[2] * 200);
+            return DM.HaveMoney + DM.ComeCustomerCnt[2] * 10000 + (DM.SellCnt[2] - DM.MissCnt[2]) * 6666;
         }
         else
         {
-            return DM.BuyGold[0] / 10 + DM.ComeCustomerCnt[0] * 100 + DM.SellCnt[0] * 100 - DM.MissCnt[0] * 500;
+            return DM.BuyGold[0] + DM.ComeCustomerCnt[0] * 8500 + (DM.SellCnt[0] - DM.MissCnt[0]) * 5000;
         }
         
     }
@@ -397,15 +397,15 @@ public class TimeManager : SingleTon<TimeManager>
                         End.transform.GetChild(0).GetComponent<TextMeshProUGUI>().SetText("B");
                         break;
 
-                    case < 2500000:
+                    case < 2500000: //2,500,000
                         End.transform.GetChild(0).GetComponent<TextMeshProUGUI>().SetText("A");
                         break;
 
-                    case < 3000000:
+                    case < 3000000: // 3,000,000
                         End.transform.GetChild(0).GetComponent<TextMeshProUGUI>().SetText("s");
                         break;
 
-                    case >= 3000000:
+                    case >= 3000000: //3,000,000
                         End.transform.GetChild(0).GetComponent<TextMeshProUGUI>().SetText("S");
                         break;
                 }

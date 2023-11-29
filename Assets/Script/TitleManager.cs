@@ -44,6 +44,12 @@ public class TitleManager : MonoBehaviour
     {
         SizeCtrl();
         if (EasyToJson.FromJson<GamePlayData>("RecordPlay").M_Day != 0) ContinueData = true;
+
+        Transform Mod = ChooseStage.transform.GetChild(0);
+        OptionData = Option.transform.GetChild(0);
+        ChooseMod = Mod.GetChild(0).gameObject;
+        DiffMod = Mod.GetChild(1).gameObject;
+        EventMod = Mod.GetChild(2).gameObject;
     }
 
     private void Start()
@@ -54,13 +60,10 @@ public class TitleManager : MonoBehaviour
             //Debug.Log(achieveType[i]);
         }
 
-        Transform Mod = ChooseStage.transform.GetChild(0);
-        OptionData = Option.transform.GetChild(0);
+        
 
         DataLoad();
-        ChooseMod = Mod.GetChild(0).gameObject;
-        DiffMod = Mod.GetChild(1).gameObject;
-        EventMod = Mod.GetChild(2).gameObject;
+        
 
         AchieveDataInput();
     }
@@ -254,8 +257,9 @@ public class TitleManager : MonoBehaviour
 
     public void StageSet()
     {
-        int days;
+        int days = 0;
 
+        
         try
         {
             days = EasyToJson.FromJson<GamePlayData>("RecordPlay").M_Day;
@@ -265,6 +269,7 @@ public class TitleManager : MonoBehaviour
         {
             days = 0;
         }
+        
         
 
         if (ContinueData)
@@ -362,6 +367,7 @@ public class TitleManager : MonoBehaviour
             if (DataManager.GameDif != Diff.Event_1)
             {
                 EventContants.SetText("아직 모드가 완성되지 않았습니다. 다른 모드를 선택해주세요.");
+                DiffSelector.SetActive(false);
                 return;
             }
             DiffSelector.transform.SetParent(EventMod.transform.GetChild((int)DataManager.GameDif % 10 + 1));
