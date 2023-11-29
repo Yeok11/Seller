@@ -51,19 +51,20 @@ public class DataManager : SingleTon<DataManager>
     [SerializeField] internal GameObject MarketBtsPos;
     internal int MarketItemCnt;
 
+    internal List<int> MarketOrderData = new List<int>();
+    #endregion
+
+#region 주문
     internal string[,] EasyMessage = new string[10, 100];
     internal string[,] NormalMessage = new string[10, 100];
+    internal string[,] BonusMessage = new string[10, 100];
 
-    //주문
     internal int[,] OrderCntPer = new int[10, 4] { { 40, 10, 0, 0 }, { 30, 15, 5, 0 }, { 20, 25, 5, 0 }, { 15, 25, 10, 0 }, { 10, 25, 10, 10 }, { 5, 25, 10, 5 }, { 0, 20, 20, 10 }, { 0, 10, 25, 15 }, { 0, 0, 30, 20 }, { 0, 0, 20, 30 } };
-    internal string[] CntMes = new string[] { "개 정도면 될 거 같아요.", "개 내놔라.", "개만 주세요.", "개만 줘.", "개 있을까요?", "개 정도 내놓아 보거라." };
-
-
-    internal List<int> MarketOrderData = new List<int>();
+    internal string[] CntMes = new string[] { "개 정도면 될 거 같아요.", "개만 내놔라.", "개 주세요.", "개만 줘.", "개 있을까요?", "개 정도 내놓아 보거라." };
     internal List<string> CustomerOrderData = new List<string>();
     #endregion
 
-#region 인테리어 값 설정
+    #region 인테리어 값 설정
     [Header("인테리어 능력치")]
     //시간 / 방문률 / 매입가 / 판매가
     internal int[] InteriorLevel = { 1, 1, 1, 1 };
@@ -121,6 +122,8 @@ public class DataManager : SingleTon<DataManager>
             NormalMessage[(int)CSVManager.Instance.csvdata.CustomMessage[i]["Num"] / 10, (int)CSVManager.Instance.csvdata.CustomMessage[i]["Num"] % 10 - 1] 
                 = CSVManager.Instance.csvdata.CustomMessage[i]["Mes1"].ToString();
 
+            BonusMessage[(int)CSVManager.Instance.csvdata.BonusCustomMes[i]["Num"] / 10, (int)CSVManager.Instance.csvdata.CustomMessage[i]["Num"] % 10 - 1]
+               = CSVManager.Instance.csvdata.CustomMessage[i]["Mes1"].ToString();
             //확인
             //Debug.Log(EasyMessage + " " + (int)CSVManager.Instance.csvdata.EasyCustomMessage[i]["Num"] / 10 + "" + ((int)CSVManager.Instance.csvdata.EasyCustomMessage[i]["Num"] % 10 - 1).ToString());
         }

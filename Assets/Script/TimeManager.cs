@@ -13,7 +13,7 @@ public class TimeManager : SingleTon<TimeManager>
 
     [SerializeField] internal GameObject WeekList;
 
-    [SerializeField] private Image DayUpdateScene;
+    [SerializeField] internal Image DayUpdateScene;
     private float UpdateSceneCnt;
     [SerializeField] GameObject End;
 
@@ -38,23 +38,16 @@ public class TimeManager : SingleTon<TimeManager>
 
     IEnumerator NewDayMes()
     {
-        DayUpdateScene.color = new Color(0, 0, 0, 1);
         DayUpdateScene.transform.GetChild(0).gameObject.SetActive(true);
         DayUpdateScene.GetComponentInChildren<TextMeshProUGUI>().text = $"Day - {DM.Days}";
 
-        if (DataManager.GameDif == Diff.Event_1)
-        {
-            DayUpdateScene.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().SetText("왜인지 심상치 않은 장사가 될 것 같습니다.");
-        }
+        if (DataManager.GameDif == Diff.Event_1) DayUpdateScene.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().SetText("왜인지 심상치 않은 장사가 될 것 같습니다.");
         else
         {
             if (TitleManager.ContinueData)
             {
                 if (WeekEventBoolTrigger[0]) DayUpdateScene.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().SetText(CSVManager.Instance.csvdata.DayEvent[DayMesCode]["WeekEvent"].ToString());
-                else
-                {
-                    DayUpdateScene.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().SetText(_DayEvent[DayMesCode]);
-                }
+                else DayUpdateScene.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().SetText(_DayEvent[DayMesCode]);
 
                 TitleManager.ContinueData = false;
             }
@@ -67,24 +60,20 @@ public class TimeManager : SingleTon<TimeManager>
                         if (DM.Weeks[DM.Days % 7] == "월") DayUpdateScene.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().SetText(CSVManager.Instance.csvdata.DayEvent[_newDayEvent(true)]["WeekEvent"].ToString());
                         else DayUpdateScene.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().SetText(_DayEvent[_newDayEvent(false)]);
                     }
-                    catch
-                    {
-                        DayUpdateScene.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().SetText(_DayEvent[_newDayEvent(false)]);
-                    }
+                    catch { DayUpdateScene.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().SetText(_DayEvent[_newDayEvent(false)]); }
                 }
                 else DayUpdateScene.transform.GetChild(0).GetChild(0).GetComponent<TextMeshProUGUI>().SetText(_DayEvent[_newDayEvent(false)]);
             }
         }
-        
         
 
         yield return new WaitForSeconds(2f);
 
         while (true)
         {
-            yield return new WaitForSeconds(0.005f);
+            yield return new WaitForSeconds(0.05f);
 
-            UpdateSceneCnt -= Time.time;
+            UpdateSceneCnt -= 0.1f;
 
             DayUpdateScene.color = new Color(0, 0, 0, UpdateSceneCnt);
 
@@ -344,15 +333,8 @@ public class TimeManager : SingleTon<TimeManager>
 
     private int ScoreSet()
     {
-        if (DataManager.GameDif == Diff.Event_1)
-        {
-            return DM.HaveMoney + DM.ComeCustomerCnt[2] * 10000 + (DM.SellCnt[2] - DM.MissCnt[2]) * 6666;
-        }
-        else
-        {
-            return DM.BuyGold[0] + DM.ComeCustomerCnt[0] * 8500 + (DM.SellCnt[0] - DM.MissCnt[0]) * 5000;
-        }
-        
+        if (DataManager.GameDif == Diff.Event_1) return DM.HaveMoney + DM.ComeCustomerCnt[2] * 10000 + (DM.SellCnt[2] - DM.MissCnt[2]) * 6666;
+        else return DM.BuyGold[0] + DM.ComeCustomerCnt[0] * 8500 + (DM.SellCnt[0] - DM.MissCnt[0]) * 5000;
     }
 
     internal void HourTimer()

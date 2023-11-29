@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class OpenSystem : MonoBehaviour, IPointerDownHandler
 {
@@ -63,12 +64,31 @@ public class OpenSystem : MonoBehaviour, IPointerDownHandler
             if (Check_WeekList == true)
             {
                 Contants.text = DM.OpCl[1];
-                TimeManager.Instance.NewDay();
+                StartCoroutine(NewdayEffect());
             }
             else
             {
                 Debug.Log("주간일지를 확인하세요.");
             }
         }
+    }
+
+    IEnumerator NewdayEffect()
+    {
+        TimeManager.Instance.DayUpdateScene.gameObject.SetActive(true);
+        TimeManager.Instance.DayUpdateScene.GetComponent<Image>().color = Color.clear;
+
+        float a = 0;
+
+        while (true)
+        {
+            a += 0.1f;
+            TimeManager.Instance.DayUpdateScene.GetComponent<Image>().color = new Color(0, 0, 0, a);
+            yield return new WaitForSeconds(0.1f);
+
+            if (a >= 1) break;
+        }
+
+        TimeManager.Instance.NewDay();
     }
 }

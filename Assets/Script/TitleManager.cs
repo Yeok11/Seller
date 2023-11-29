@@ -143,9 +143,18 @@ public class TitleManager : MonoBehaviour
 
         for (int i = 0; i < PlayCnt.Length; i++)
         {
-            PlayCnt[i] = System.Convert.ToInt32(dataArr[i]);
-            BestScore[i] = System.Convert.ToInt32(dataArr1[i]);
-            BestGetMoney[i] = System.Convert.ToInt32(dataArr2[i]);
+            try
+            {
+                PlayCnt[i] = System.Convert.ToInt32(dataArr[i]);
+                BestScore[i] = System.Convert.ToInt32(dataArr1[i]);
+                BestGetMoney[i] = System.Convert.ToInt32(dataArr2[i]);
+            }
+            catch
+            {
+                PlayCnt[i] = 0;
+                BestScore[i] = 0;
+                BestGetMoney[i] = 0;
+            }
         }
 
 

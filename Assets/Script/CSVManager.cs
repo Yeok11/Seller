@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CSVManager : MonoBehaviour
 {
@@ -13,11 +14,11 @@ public class CSVManager : MonoBehaviour
 
         csvdata.ItemData = CSVReader.Read("ItemData");
         csvdata.CustomMessage = CSVReader.Read("CustomerMEs");
-        csvdata.DayEvent = CSVReader.Read("HappyDay");
         csvdata.EasyCustomMessage = CSVReader.Read("CustomerEasyMes");
+        csvdata.BonusCustomMes = CSVReader.Read("CustomerMesBonus");
+        csvdata.DayEvent = CSVReader.Read("HappyDay");
         csvdata.achieve = CSVReader.Read("Achieve");
 
-        if (DataManager.Instance.gameObject != null) DataManager.Instance.DataInput();
-
+        if (DataManager.Instance.gameObject != null && SceneManager.GetActiveScene().name != "Title") DataManager.Instance.DataInput();
     }
 }
